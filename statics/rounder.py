@@ -26,7 +26,7 @@ class RoundedButton(tk.Canvas):
         if int(self["height"]) < text_rect[3] - text_rect[1]:
             self["height"] = (text_rect[3] - text_rect[1]) + 10
 
-    def round_rectangle(self, x1, y1, x2, y2, radius=25, update=False,
+    def round_rectangle(self, x1, y1, x2, y2, radius=0, update=False,
                         **kwargs):
         points = [x1 + radius, y1,
                   x1 + radius, y1,

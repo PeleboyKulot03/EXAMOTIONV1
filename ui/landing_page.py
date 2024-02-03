@@ -9,6 +9,8 @@ main_frame = Tk()
 main_frame.resizable(False, False)
 main_frame.config(bg='black')
 ws.FullScreenApp(main_frame)
+main_frame.state('zoomed')
+
 
 # toolbar
 tool_bar = Frame(main_frame, width=0, height=200)

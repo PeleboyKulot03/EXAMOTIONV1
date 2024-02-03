@@ -11,6 +11,7 @@ main_frame = Tk()
 main_frame.resizable(False, False)
 ws.FullScreenApp(main_frame)
 splash_screen(main_frame)
+main_frame.state('zoomed')
 
 
 main_frame.mainloop()
