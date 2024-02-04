@@ -11,6 +11,7 @@ is_first = True
 on_post = False
 is_destroy = False
 question_counter = 0
+cur_answer = 4
 q_and_a_holder = []
 nlps = []
 answers = []
@@ -68,6 +69,8 @@ answers_holder = []
 
 
 def on_click(pos):
+    global cur_answer
+    cur_answer = pos
     answer = answers_holder[question_counter]
     answer[pos].configure(border_color="#2B2D42", border_width=5)
 
@@ -140,6 +143,10 @@ def get_questions():
         q_and_a_holder.append(question_holder)
 
 
+def remove_text():
+    what_do_you_feel.delete("0.0", "end")
+
+
 def goto_next():
     stopper = Stopper()
     global timer_class
@@ -148,6 +155,7 @@ def goto_next():
     global question_counter
     global post_survey
     global what_do_you_feel
+    global cur_answer
 
     if is_first:
         pre_survey.destroy()
@@ -155,38 +163,49 @@ def goto_next():
         next_button.config(text="Next")
         is_first = False
         timer_class.start_timer()
-        stopper.start_thread()
+        # stopper.start_thread()
         on_post = True
 
     elif question_counter < len(q_and_a_holder) - 1 and not on_post:
-        post_survey_answer = what_do_you_feel.get("1.0", 'end-1c')
+        post_survey_answer = what_do_you_feel.get("0.0", 'end-1c')
         if len(post_survey_answer) == 0:
             messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
             return
-        answers.append(post_survey_answer)
+        cur_answer = 4
+        nlps.append(post_survey_answer)
         post_survey.destroy()
         timer_class.start_timer()
         q_and_a_holder[question_counter].destroy()
         question_counter = question_counter + 1
         q_and_a_holder[question_counter].pack(fill="both", expand=True, padx=20, pady=10)
-        next_button["state"] = "disabled"
-        stopper.start_thread()
+        # next_button["state"] = "disabled"
+        # stopper.start_thread()
         counter.config(text=update_item_number())
         on_post = True
 
     elif question_counter < len(q_and_a_holder) and on_post:
         # post survey
-        post_survey = Frame(center_frame)
-        post_survey.config(bg='black')
-        prompt_label = Label(post_survey,
-                             text=f"What do you feel answering question number {question_counter + 1}?",
-                             font=("Arial", 15),
-                             justify=LEFT)
-        what_do_you_feel = Text(post_survey, height=5, font=("Arial", 10), padx=10, pady=10)
+        if cur_answer == 4:
+            messagebox.showinfo("showinfo", "Sorry but Answer is requred!")
+            return
+        answers.append(cur_answer)
 
-        prompt_label.grid(column=0, row=0, sticky="nsew")
-        what_do_you_feel.grid(column=0, row=1, sticky="nsew", padx=30, pady=10)
+        post_survey = customtkinter.CTkFrame(master=center_frame, corner_radius=10, fg_color="#8D99AE")
+        prompt_label = customtkinter.CTkLabel(master=post_survey,
+                                              text=f"What do you feel answering question number {question_counter + 1}?",
+                                              font=("Arial", 25),
+                                              corner_radius=10,
+                                              fg_color="#EDF2F4",
+                                              justify=LEFT)
+
+        what_do_you_feel = customtkinter.CTkTextbox(master=post_survey, font=("Arial", 20), corner_radius=10)
+        prompt_label.grid(column=0, row=0, sticky="nsew", padx=40, pady=(60, 20))
+        what_do_you_feel.grid(column=0, row=1, sticky="nsew", padx=40, pady=(0, 60))
+        what_do_you_feel.focus_set()
+
         post_survey.columnconfigure(0, weight=1)
+        post_survey.rowconfigure(0, weight=1)
+        post_survey.rowconfigure(1, weight=2)
 
         on_post = False
         timer_class.stop_timer()
@@ -194,9 +213,19 @@ def goto_next():
         post_survey.pack(fill="both", expand=True, padx=20, pady=50)
 
     else:
-        answers.append(what_do_you_feel.get("1.0", 'end-1c'))
+        post_survey_answer = what_do_you_feel.get("0.0", 'end-1c')
+        if len(post_survey_answer) == 0:
+            messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
+            return
+
+        nlps.append(post_survey_answer)
         print(answers)
+        print(nlps)
         main_frame.destroy()
+
+
+def radiobutton_event():
+    print("radiobutton toggled, current value:", radio_var.get())
 
 
 statics = static.Statics()
@@ -225,8 +254,43 @@ instructions = customtkinter.CTkLabel(master=center_frame,
                                       )
 instructions.pack(fill='x', padx=40, pady=20)
 
-
 pre_survey = customtkinter.CTkFrame(master=center_frame, fg_color="#8D99AE")
+prompt_label_pre = customtkinter.CTkLabel(master=pre_survey,
+                                          text=f"What do you feel answering question number {question_counter + 1}?",
+                                          font=("Arial", 25),
+                                          corner_radius=10,
+                                          fg_color="#EDF2F4",
+                                          justify=LEFT)
+
+prompt_label_pre.grid(column=0, row=0, sticky="nsew", padx=40, pady=(60, 20))
+
+radio_var = IntVar(value=0)
+radiobutton_1 = customtkinter.CTkRadioButton(pre_survey, text="CTkRadioButton 1",
+                                             font=("Arial", 20),
+                                             command=radiobutton_event, variable=radio_var, value=1, fg_color="#EDF2F4")
+radiobutton_2 = customtkinter.CTkRadioButton(pre_survey, text="CTkRadioButton 2",
+                                             font=("Arial", 20),
+                                             command=radiobutton_event, variable=radio_var, value=2, fg_color="#EDF2F4")
+radiobutton_3 = customtkinter.CTkRadioButton(pre_survey, text="CTkRadioButton 3",
+                                             font=("Arial", 20),
+                                             command=radiobutton_event, variable=radio_var, value=1, fg_color="#EDF2F4")
+radiobutton_4 = customtkinter.CTkRadioButton(pre_survey, text="CTkRadioButton 4",
+                                             font=("Arial", 20),
+                                             command=radiobutton_event, variable=radio_var, value=2, fg_color="#EDF2F4")
+
+radiobutton_1.grid(column=0, row=1, sticky="nsew", padx=40)
+radiobutton_2.grid(column=0, row=2, sticky="nsew", padx=40)
+radiobutton_3.grid(column=0, row=3, sticky="nsew", padx=40)
+radiobutton_4.grid(column=0, row=4, sticky="nsew", padx=40)
+
+pre_survey.grid_rowconfigure(0, weight=2)
+pre_survey.grid_rowconfigure(1, weight=1)
+pre_survey.grid_rowconfigure(2, weight=1)
+pre_survey.grid_rowconfigure(3, weight=1)
+pre_survey.grid_rowconfigure(4, weight=1)
+
+pre_survey.grid_columnconfigure(0, weight=1)
+
 pre_survey.pack(fill="both", expand=True, padx=40, pady=20)
 
 next_holder = Frame(center_frame)
@@ -252,8 +316,7 @@ next_button.pack(side="right")
 divider1.pack(side="right")
 
 post_survey = Frame(center_frame)
-what_do_you_feel = Text(post_survey, height=5, font=("Arial", 10), padx=10, pady=10)
-
+what_do_you_feel = customtkinter.CTkTextbox(post_survey, height=5, font=("Arial", 10), padx=10, pady=10)
 # generate questions
 get_questions()
 
@@ -262,11 +325,13 @@ right_frame = Frame(main_frame)
 right_frame.grid(row=0, column=1, sticky="nsew")
 
 # holder
-holder = Frame(right_frame)
+holder = Frame(right_frame, bg="#2B2D42")
 holder.grid(row=0, column=0, pady=(50, 10), padx=(0, 10), sticky='we')
 
 # timer and count
-timer = Label(holder, text="00:00", font=("Arial", 15), bg="black", fg="white", width=10)
+timer = Label(holder, text="00:00", font=("Arial", 15), bg="#EDF2F4", fg="black", width=10)
+divider3 = customtkinter.CTkLabel(master=holder, text="", corner_radius=1, fg_color="#FE3F56", width=10, height=30)
+divider4 = customtkinter.CTkLabel(master=holder, text="", corner_radius=1, fg_color="#FE3F56", width=10, height=30)
 
 
 def update_item_number():
@@ -279,8 +344,10 @@ def on_close():
     main_frame.destroy()
 
 
-counter = Label(holder, text=update_item_number(), font=("Arial", 15), bg="black", fg="white", width=10)
-timer.pack(side="right", padx=10)
+counter = Label(holder, text=update_item_number(), font=("Arial", 15), bg="#EDF2F4", fg="black", width=10)
+divider4.pack(side="right", padx=(0, 10))
+timer.pack(side="right")
+divider3.pack(side="right", padx=(0, 10))
 counter.pack(side="right")
 
 camera_frame = Label(right_frame, bg="black", height=20)
