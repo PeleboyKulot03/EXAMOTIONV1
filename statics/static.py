@@ -11,6 +11,32 @@ class Statics:
         self.title = "ExaMotion"
         self.about_us = "About Us"
         self.policy = "Policy"
+        self.questions = [
+            {
+                "question": "This is a question 1",
+                1: "Answer1",
+                2: "Answer2",
+                3: "Answer3",
+                4: "Answer4",
+                "correct": 1
+            },
+            {
+                "question": "This is a question 2",
+                1: "Answer1",
+                2: "Answer2",
+                3: "Answer3",
+                4: "Answer4",
+                "correct": 2
+            },
+            {
+                "question": "This is a question 3",
+                1: "Answer1",
+                2: "Answer2",
+                3: "Answer3",
+                4: "Answer4",
+                "correct": 3
+            }
+        ]
 
     def get_title(self):
         return self.title
@@ -23,3 +49,6 @@ class Statics:
 
     def get_policy(self):
         return self.policy
+
+    def get_questions(self):
+        return self.questions

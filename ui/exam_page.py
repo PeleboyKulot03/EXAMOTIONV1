@@ -11,10 +11,14 @@ is_first = True
 on_post = False
 is_destroy = False
 question_counter = 0
-cur_answer = 4
+cur_answer = 5
 q_and_a_holder = []
 nlps = []
 answers = []
+answers_holder = []
+score = 0
+statics = static.Statics()
+questions = statics.get_questions()
 
 
 def set_enabled():
@@ -29,6 +33,15 @@ def set_enabled():
 class Stopper:
     def __init__(self):
         self.thread = threading.Thread(target=set_enabled, args=())
+
+    def start_thread(self):
+        next_button["state"] = "disabled"
+        self.thread.start()
+
+
+class ShowAnsStopper:
+    def __init__(self):
+        self.thread = threading.Thread(target=show_post_survey, args=())
 
     def start_thread(self):
         next_button["state"] = "disabled"
@@ -65,23 +78,23 @@ class TimerApp:
             self.root.after(1000, self.update_timer)
 
 
-answers_holder = []
-
-
 def on_click(pos):
     global cur_answer
-    cur_answer = pos
     answer = answers_holder[question_counter]
-    answer[pos].configure(border_color="#2B2D42", border_width=5)
+    if not cur_answer == 5:
+        answer[cur_answer - 1].configure(fg_color="#EDF2F4")
+
+    cur_answer = pos
+    answer[pos - 1].configure(fg_color="#c4c4c4")
 
 
 def get_questions():
     global q_and_a_holder
-    for i in range(10):
+    for item in questions:
         question_holder = customtkinter.CTkFrame(center_frame, fg_color="#8D99AE", corner_radius=10)
 
         question_label = customtkinter.CTkLabel(question_holder,
-                                                text=f"{i + 1}:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris molestie leo vitae augue lacinia, a dignissim neque ultricies. Donec ut ex risus. Nunc at quam ultricies, congue nibh tempor, imperdiet metus. Vestibulum mi enim, finibus eget lacus quis, fringilla gravida erat. Etiam erat dolor, venenatis cursus est ut, hendrerit ullamcorper nunc.",
+                                                text=item.get("question"),
                                                 font=("Helvetica", 25),
                                                 justify='center',
                                                 wraplength=700,
@@ -91,40 +104,42 @@ def get_questions():
 
         answer_1 = customtkinter.CTkButton(master=question_holder,
                                            corner_radius=10,
-                                           text="answer1",
+                                           text=item.get(1),
                                            fg_color="#EDF2F4",
-                                           command=lambda: on_click(0),
+                                           command=lambda: on_click(1),
                                            font=("Arial", 20),
                                            text_color="black",
-                                           border_width=5,
-                                           border_color="#EDF2F4"
+                                           hover_color='#c4c4c4'
                                            )
 
         answer_2 = customtkinter.CTkButton(master=question_holder,
                                            corner_radius=10,
-                                           text="answer2",
+                                           text=item.get(2),
                                            fg_color="#EDF2F4",
-                                           command=lambda: on_click(1),
+                                           command=lambda: on_click(2),
                                            font=("Arial", 20),
-                                           text_color="black"
+                                           text_color="black",
+                                           hover_color='#c4c4c4'
                                            )
 
         answer_3 = customtkinter.CTkButton(master=question_holder,
                                            corner_radius=10,
-                                           text="answer3",
+                                           text=item.get(3),
                                            fg_color="#EDF2F4",
-                                           command=lambda: on_click(2),
+                                           command=lambda: on_click(3),
                                            font=("Arial", 20),
-                                           text_color="black"
+                                           text_color="black",
+                                           hover_color='#c4c4c4'
                                            )
 
         answer_4 = customtkinter.CTkButton(master=question_holder,
                                            corner_radius=10,
-                                           text="answer4",
+                                           text=item.get(4),
                                            fg_color="#EDF2F4",
-                                           command=lambda: on_click(3),
+                                           command=lambda: on_click(4),
                                            font=("Arial", 20),
-                                           text_color="black"
+                                           text_color="black",
+                                           hover_color='#c4c4c4'
                                            )
 
         question_label.grid(column=0, row=0, columnspan=2, sticky="nsew", padx=20, pady=20)
@@ -143,11 +158,50 @@ def get_questions():
         q_and_a_holder.append(question_holder)
 
 
-def remove_text():
-    what_do_you_feel.delete("0.0", "end")
+def show_answer():
+    global score
+    correct_ans = questions[question_counter].get("correct") - 1
+    if correct_ans == cur_answer-1:
+        score += 1
+
+    answer = answers_holder[question_counter]
+    answer[cur_answer - 1].configure(fg_color="#701313")
+    answer[questions[question_counter].get("correct") - 1].configure(fg_color="#32a852")
+
+
+def show_post_survey():
+    global post_survey
+    global on_post
+    global what_do_you_feel
+
+    sleep(1)
+
+    next_button["state"] = "normal"
+    post_survey = customtkinter.CTkFrame(master=center_frame, corner_radius=10, fg_color="#8D99AE")
+    prompt_label = customtkinter.CTkLabel(master=post_survey,
+                                          text=f"What do you feel answering question number {question_counter + 1}?",
+                                          font=("Arial", 25),
+                                          corner_radius=10,
+                                          fg_color="#EDF2F4",
+                                          justify=LEFT)
+
+    what_do_you_feel = customtkinter.CTkTextbox(master=post_survey, font=("Arial", 20), corner_radius=10)
+    prompt_label.grid(column=0, row=0, sticky="nsew", padx=40, pady=(60, 20))
+    what_do_you_feel.grid(column=0, row=1, sticky="nsew", padx=40, pady=(0, 60))
+    what_do_you_feel.focus_set()
+
+    post_survey.columnconfigure(0, weight=1)
+    post_survey.rowconfigure(0, weight=1)
+    post_survey.rowconfigure(1, weight=2)
+
+    on_post = False
+    timer_class.stop_timer()
+    q_and_a_holder[question_counter].destroy()
+    post_survey.pack(fill="both", expand=True, padx=20, pady=50)
 
 
 def goto_next():
+    show_answer_stopper = ShowAnsStopper()
     stopper = Stopper()
     global timer_class
     global is_first
@@ -171,7 +225,7 @@ def goto_next():
         if len(post_survey_answer) == 0:
             messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
             return
-        cur_answer = 4
+        cur_answer = 5
         nlps.append(post_survey_answer)
         post_survey.destroy()
         timer_class.start_timer()
@@ -185,32 +239,14 @@ def goto_next():
 
     elif question_counter < len(q_and_a_holder) and on_post:
         # post survey
-        if cur_answer == 4:
-            messagebox.showinfo("showinfo", "Sorry but Answer is requred!")
+        if cur_answer == 5:
+            messagebox.showinfo("showinfo", "Sorry but you haven't choose an answer yet!")
             return
+
+        print(question_counter)
+        show_answer()
         answers.append(cur_answer)
-
-        post_survey = customtkinter.CTkFrame(master=center_frame, corner_radius=10, fg_color="#8D99AE")
-        prompt_label = customtkinter.CTkLabel(master=post_survey,
-                                              text=f"What do you feel answering question number {question_counter + 1}?",
-                                              font=("Arial", 25),
-                                              corner_radius=10,
-                                              fg_color="#EDF2F4",
-                                              justify=LEFT)
-
-        what_do_you_feel = customtkinter.CTkTextbox(master=post_survey, font=("Arial", 20), corner_radius=10)
-        prompt_label.grid(column=0, row=0, sticky="nsew", padx=40, pady=(60, 20))
-        what_do_you_feel.grid(column=0, row=1, sticky="nsew", padx=40, pady=(0, 60))
-        what_do_you_feel.focus_set()
-
-        post_survey.columnconfigure(0, weight=1)
-        post_survey.rowconfigure(0, weight=1)
-        post_survey.rowconfigure(1, weight=2)
-
-        on_post = False
-        timer_class.stop_timer()
-        q_and_a_holder[question_counter].destroy()
-        post_survey.pack(fill="both", expand=True, padx=20, pady=50)
+        show_answer_stopper.start_thread()
 
     else:
         post_survey_answer = what_do_you_feel.get("0.0", 'end-1c')
@@ -219,16 +255,17 @@ def goto_next():
             return
 
         nlps.append(post_survey_answer)
-        print(answers)
-        print(nlps)
+        print(f"answers{answers}")
+        print(f"nlps:{nlps}")
+        print(f"score:{score}")
         main_frame.destroy()
+        import show_score
 
 
 def radiobutton_event():
     print("radiobutton toggled, current value:", radio_var.get())
 
 
-statics = static.Statics()
 main_frame = Tk()
 main_frame.resizable(False, False)
 main_frame.config(bg='black')
