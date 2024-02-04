@@ -5,20 +5,33 @@ class RoundedButton(tk.Canvas):
     def __init__(self, master=None, text: str = "", radius=25, btnforeground="#000000", btnbackground="#ffffff",
                  clicked=None, *args, **kwargs):
         super(RoundedButton, self).__init__(master, *args, **kwargs)
+
         self.config(bg=self.master["bg"])
         self.btnbackground = btnbackground
         self.clicked = clicked
+        self.btnforeground = btnforeground
 
         self.radius = radius
 
         self.rect = self.round_rectangle(0, 0, 0, 0, tags="button", radius=radius, fill=btnbackground)
         self.text = self.create_text(0, 0, text=text, tags="button", fill=btnforeground, font=("Times", 15),
-                                     justify="center")
+                                     justify="center", width=400)
 
         self.tag_bind("button", "<ButtonPress>", self.border)
         self.tag_bind("button", "<ButtonRelease>", self.border)
         self.bind("<Configure>", self.resize)
 
+        text_rect = self.bbox(self.text)
+        if int(self["width"]) < text_rect[2] - text_rect[0]:
+            self["width"] = (text_rect[2] - text_rect[0]) + 10
+
+        if int(self["height"]) < text_rect[3] - text_rect[1]:
+            self["height"] = (text_rect[3] - text_rect[1]) + 10
+
+    def update_color(self, bg):
+        self.rect = self.round_rectangle(0, 0, 0, 0, tags="button", radius=self.radius, fill=bg)
+        self.text = self.create_text(0, 0, text=self.text, tags="button", fill=self.btnforeground, font=("Times", 15),
+                                     justify="center", width=400)
         text_rect = self.bbox(self.text)
         if int(self["width"]) < text_rect[2] - text_rect[0]:
             self["width"] = (text_rect[2] - text_rect[0]) + 10
