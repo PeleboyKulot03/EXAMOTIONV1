@@ -7,8 +7,8 @@ ss = show_score.ShowScore(30, 30, "test")
 
 def splash_screen(frame):
     frame.destroy()
-    # ss.create_frame()
-    import landing_page
+    ss.create_frame()
+
 
 main_frame = Tk()
 main_frame.resizable(False, False)
