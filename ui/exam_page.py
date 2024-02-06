@@ -1,10 +1,15 @@
 from tkinter import *
 from tkinter import messagebox
+import numpy as np
 import window_setter as ws
-from statics import static, rounder
+from statics import static
 import threading
 from time import sleep
 import customtkinter
+from PIL import Image, ImageTk
+import cv2
+from deepface import DeepFace
+
 
 # for mixing the cards
 is_first = True
@@ -19,6 +24,60 @@ answers_holder = []
 score = 0
 statics = static.Statics()
 questions = statics.get_questions()
+cap = cv2.VideoCapture(0)
+
+# Load DEEPFACE model
+model = DeepFace.build_model('Emotion')
+# Define emotion labels
+emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+
+def show_frame():
+    _, frame = cap.read()
+    frame = cv2.flip(frame, 1)
+    # Convert frame to grayscale
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces in the frame
+    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=10, minSize=(30, 30))
+
+    for (x, y, w, h) in faces:
+        # Extract the face ROI (Region of Interest)
+        face_roi = gray_frame[y:y + h, x:x + w]
+
+        # Resize the face ROI to match the input shape of the model
+        resized_face = cv2.resize(face_roi, (48, 48), interpolation=cv2.INTER_AREA)
+
+        # Preprocess the image for DEEPFACE
+        normalized_face = resized_face / 255.0
+        reshaped_face = normalized_face.reshape(1, 48, 48, 1)
+
+        # Predict emotions using the pre-trained model
+        preds = model.predict(reshaped_face)
+        emotion_idx = np.argmax(preds)
+        emotion = emotion_labels[emotion_idx]
+
+        # Draw rectangle around face and label with predicted emotion
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        if emotion == "sad":
+            emotion = "bored"
+        elif emotion == "angry":
+            emotion = "frustration"
+        elif emotion == "happy":
+            emotion = "excited"
+        elif emotion == "disgust":
+            emotion = "confusion"
+
+        cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+    img = Image.fromarray(cv2image)
+    imgtk = ImageTk.PhotoImage(image=img)
+    camera_frame.imgtk = imgtk
+    camera_frame.configure(image=imgtk, width=200, height=300)
+    camera_frame.after(1, show_frame)
 
 
 def set_enabled():
@@ -109,7 +168,7 @@ def get_questions():
                                            command=lambda: on_click(1),
                                            font=("Arial", 20),
                                            text_color="black",
-                                           hover_color='#c4c4c4'
+                                           hover_color='#c4c4c4',
                                            )
 
         answer_2 = customtkinter.CTkButton(master=question_holder,
@@ -399,4 +458,9 @@ main_frame.protocol("WM_DELETE_WINDOW", on_close)
 main_frame.config(bg='#2B2D42')
 right_frame.config(bg='#2B2D42')
 center_frame.config(bg='#2B2D42')
+
+# starting the opencv
+camera_thread = threading.Thread(target=show_frame, args=())
+camera_thread.start()
+
 main_frame.mainloop()
