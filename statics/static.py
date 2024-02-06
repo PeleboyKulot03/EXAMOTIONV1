@@ -53,7 +53,8 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "6. The _______ statement allows you to choose between several alternatives based on the value of a variable.",
+                "question": "6. The _______ statement allows you to choose between several "
+                            "\nalternatives based on the value of a variable.",
                 1: "A. if",
                 2: "B. for",
                 3: "C. switch",
@@ -77,7 +78,8 @@ class Statics:
                 "correct": 1
             },
             {
-                "question": "9. In C++, the correct way to include the input-output stream header file is _________.",
+                "question": "9. In C++, the correct way to include the"
+                            "\n input-output stream header file is _________.",
                 1: "A. #include <stdio.h>",
                 2: "B. #include <iostream>",
                 3: "C. #include <io.h>",
@@ -94,8 +96,14 @@ class Statics:
             },
             {
                 "question": "11. In C++, what is the difference between function overloading and function overriding? ",
-                1: "A. Overriding allows multiple functions with the same name in the same scope, while overloading is for derived classes replacing base class functions.",
-                2: "B. Overloading allows multiple functions with the same name in the same scope, while overriding is for derived classes replacing base class functions.",
+                1: "A. Overriding allows multiple functions with"
+                   "\n the same name in the same scope, "
+                   "\nwhile overloading is for derived classes "
+                   "\nreplacing base class functions.",
+                2: "B. Overloading allows multiple functions"
+                   "\n with the same name in the same scope,"
+                   "\n while overriding is for derived classes "
+                   "\nreplacing base class functions.",
                 3: "C. Both are the same; they are used interchangeably.",
                 4: "D. Overloading and overriding are not allowed in C++.",
                 "correct": 2
@@ -149,7 +157,8 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "18. Which of the following is the correct syntax of including a user defined header files in C++?",
+                "question": "18. Which of the following is the "
+                            "\ncorrect syntax of including a user defined header files in C++?",
                 1: "A. #include [userdefined]",
                 2: "B. #include “userdefined”",
                 3: "C. #include <userdefined.h>",
