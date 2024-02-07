@@ -1,8 +1,7 @@
 from tkinter import *
 import window_setter as ws
 import show_score
-
-ss = show_score.ShowScore(30, 30, "test")
+# ss = show_score.ShowScore(30, 30, "test")
 
 
 def splash_screen(frame):

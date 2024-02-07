@@ -1,14 +1,23 @@
 from tkinter import *
 import window_setter as ws
 from PIL import ImageTk, Image
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg,
+    NavigationToolbar2Tk
+)
+import matplotlib
+matplotlib.use("TkAgg")
 
+matplotlib.rcParams['toolbar'] = 'None'
 
 class ShowScore:
-    def __init__(self, score, time, nlps):
+    def __init__(self, score, time, nlps, data):
         self.main_frame = Tk()
         self.score = score
         self.nlps = nlps
         self.time = time
+        self.data = data
 
     def create_frame(self):
         self.main_frame.resizable(False, False)
@@ -73,10 +82,35 @@ class ShowScore:
         chart_label = Label(lower_portion, text="CHART", font=("Roboto", 20), fg="white", bg="#2B2D42", pady=20)
         chart_label.pack(side='top', anchor='n', fill=X)
         chart_holder = Frame(lower_portion)
-        chart_holder.pack(side='top', anchor='n', expand=True, fill=X)
 
-        chart = Label(chart_holder, height=20, bg="black")
-        chart.pack(side='top', anchor='n', expand=True, fill=X)
+        languages = self.data.keys()
+        popularity = self.data.values()
+
+        # create a figure
+        figure = Figure(figsize=(1, 3), dpi=100)
+        figure.canvas.header_visible = False
+        figure.canvas.footer_visible = False
+        figure.canvas.toolbar_visible = False
+
+        # create FigureCanvasTkAgg object
+        figure_canvas = FigureCanvasTkAgg(figure, chart_holder)
+        figure_canvas.header_visible = False
+        figure_canvas.footer_visible = False
+        figure_canvas.toolbar_visible = False
+
+        # create the toolbar
+        NavigationToolbar2Tk(figure_canvas, chart_label)
+
+        # create axes
+        axes = figure.add_subplot()
+
+        # create the barchart
+        axes.bar(languages, popularity)
+        axes.set_title('Emotions while taking the exam')
+        axes.set_ylabel('Occurrence')
+
+        figure_canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+        chart_holder.pack(side='top', anchor='n', expand=True, fill=X)
 
         chart_divider = Label(chart_holder, font=("Arial", 1), bg="#FAA307")
         chart_divider.pack(side='top', anchor='n', fill=X)
@@ -87,8 +121,8 @@ class ShowScore:
         start_image = Label(lower_portion, image=start_image_tk, cursor="hand2", pady=20)
         start_image["bg"] = "#2B2D42"
         start_image["border"] = "0"
-
         start_image.pack(side='top', anchor='n', expand=True)
+        start_image.bind('<Button-1>', self.goto_landing_page)
 
         right_frame.grid(row=0, column=1, sticky="nsew", pady=100)
         right_frame.columnconfigure(0, weight=1)
@@ -98,4 +132,9 @@ class ShowScore:
 
         self.main_frame.rowconfigure(0, weight=1)
         self.main_frame.mainloop()
+
+    def goto_landing_page(self, event=None):
+        self.main_frame.destroy()
+        import landing_page
+
 

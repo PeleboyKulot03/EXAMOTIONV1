@@ -28,14 +28,14 @@ class Statics:
                 4: "D. cout",
                 "correct": 4
             },
-            # {
-            #     "question": "3. The ___________ of a variable determines the kind of values it can hold and the operations that can be performed on it.",
-            #     1: "A. Scope",
-            #     2: "B. Data type ",
-            #     3: "C. Declaration",
-            #     4: "D. Assignment",
-            #     "correct": 2
-            # },
+            {
+                "question": "3. The ___________ of a variable determines the kind of values it can hold and the operations that can be performed on it.",
+                1: "A. Scope",
+                2: "B. Data type ",
+                3: "C. Declaration",
+                4: "D. Assignment",
+                "correct": 2
+            },
             # {
             #     "question": "4. The ______ statement is used for conditional execution of code based on a specified condition.",
             #     1: "A. if",

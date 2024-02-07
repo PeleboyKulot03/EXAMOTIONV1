@@ -22,11 +22,13 @@ nlps = []
 answers = []
 emotions = []
 answers_holder = []
+times = []
 score = 0
 statics = static.Statics()
 questions = statics.get_questions()
 cap = cv2.VideoCapture(0)
 seconds = 3600
+starting_time = seconds
 get_emotion = False
 
 
@@ -55,6 +57,7 @@ def show_frame():
     while not is_destroy:
         _, frame = cap.read()
         frame = cv2.flip(frame, 1)
+
         # Convert frame to grayscale
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -72,37 +75,47 @@ def show_frame():
             normalized_face = resized_face / 255.0
             reshaped_face = normalized_face.reshape(1, 48, 48, 1)
 
+            # Predict emotions using the pre-trained model
+            preds = model.predict(reshaped_face)
+            emotion_idx = np.argmax(preds)
+            emotion = emotion_labels[emotion_idx]
+
+            # Draw rectangle around face and label with predicted emotion
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            if emotion == "sad":
+                emotion = "Bored"
+            elif emotion == "angry":
+                emotion = "Frustration"
+            elif emotion == "happy":
+                emotion = "Excited"
+            elif emotion == "disgust":
+                emotion = "Confusion"
+            elif emotion == "neutral":
+                emotion = "Neutral"
+            elif emotion == "fear":
+                continue
+            elif emotion == "surprise":
+                continue
+
+            cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
             if get_emotion:
-                # Predict emotions using the pre-trained model
-                preds = model.predict(reshaped_face)
-                emotion_idx = np.argmax(preds)
-                emotion = emotion_labels[emotion_idx]
-
-                # Draw rectangle around face and label with predicted emotion
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                if emotion == "sad":
-                    emotion = "bored"
-                elif emotion == "angry":
-                    emotion = "frustration"
-                elif emotion == "happy":
-                    emotion = "excited"
-                elif emotion == "disgust":
-                    emotion = "confusion"
-
-                cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-                get_emotion = False
-                if question_counter+1 > len(emotions):
-                    emotions.append({(question_counter + 1): [emotion]})
+                if question_counter + 1 > len(emotions):
+                    temp_emotion = [emotion]
+                    emotions.append(temp_emotion)
                 else:
                     temp_emotion = emotions[question_counter]
-                    temp_emotion[question_counter+1].append(emotion)
+                    temp_emotion.append(emotion)
 
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
+
         if not is_destroy:
             imgtk = ImageTk.PhotoImage(image=img)
             camera_frame.imgtk = imgtk
             camera_frame.configure(image=imgtk, width=200, height=300)
+
+        img.close()
         sleep(.01)
 
     # show_image_thread = threading.Thread(target=show_image, args=(frame, ))
@@ -118,17 +131,6 @@ def set_enabled():
         sleep(1)
 
     next_button["state"] = "normal"
-
-
-def open_get_emotion():
-    print("hi")
-    global get_emotion
-
-    while not is_destroy:
-        for i in range(15):
-            sleep(1)
-
-        get_emotion = True
 
 
 class Stopper:
@@ -173,8 +175,8 @@ class TimerApp:
         if self.timer_running:
             seconds -= 1
             minutes = seconds // 60
-            seconds = seconds % 60
-            time_str = f"{minutes:02}:{seconds:02}"
+            temp_seconds = seconds % 60
+            time_str = f"{minutes:02}:{temp_seconds:02}"
             timer.config(text=time_str)
             self.root.after(1000, self.update_timer)
 
@@ -303,7 +305,6 @@ def show_post_survey():
 
 def goto_next():
     show_answer_stopper = ShowAnsStopper()
-    stopper = Stopper()
     global timer_class
     global is_first
     global on_post
@@ -311,6 +312,9 @@ def goto_next():
     global post_survey
     global what_do_you_feel
     global cur_answer
+    global get_emotion
+    global times
+    global starting_time
 
     if is_first:
         pre_survey.destroy()
@@ -318,16 +322,16 @@ def goto_next():
         next_button.config(text="Next")
         is_first = False
         timer_class.start_timer()
-        stopper.start_thread()
-        emotion_getter = threading.Thread(target=open_get_emotion, args=())
-        emotion_getter.start()
         on_post = True
+        get_emotion = True
 
     elif question_counter < len(q_and_a_holder) - 1 and not on_post:
         post_survey_answer = what_do_you_feel.get("0.0", 'end-1c')
+
         if len(post_survey_answer) == 0:
             messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
             return
+
         cur_answer = 5
         nlps.append(post_survey_answer)
         post_survey.destroy()
@@ -335,10 +339,11 @@ def goto_next():
         q_and_a_holder[question_counter].destroy()
         question_counter = question_counter + 1
         q_and_a_holder[question_counter].pack(fill="both", expand=True, padx=20, pady=10)
-        next_button["state"] = "disabled"
-        stopper.start_thread()
         counter.config(text=update_item_number())
         on_post = True
+        get_emotion = False
+        print("hi")
+        starting_time = seconds
 
     elif question_counter < len(q_and_a_holder) and on_post:
         # post survey
@@ -346,24 +351,37 @@ def goto_next():
             messagebox.showinfo("showinfo", "Sorry but you haven't choose an answer yet!")
             return
 
+        get_emotion = True
         print(question_counter)
         show_answer()
         answers.append(cur_answer)
         show_answer_stopper.start_thread()
+        times.append(starting_time - seconds)
 
     else:
         post_survey_answer = what_do_you_feel.get("0.0", 'end-1c')
         if len(post_survey_answer) == 0:
             messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
             return
-
         nlps.append(post_survey_answer)
-        print(f"answers{answers}")
+
         print(f"nlps:{nlps}")
-        print(f"score:{score}")
-        print(emotions)
+        print(f"emotion:{emotions}")
+        print(f"times:{times}")
+        data = {
+            'Bored': 0,
+            'Frustration': 0,
+            'Excited': 0,
+            'Neutral': 0,
+            'Confusion': 0
+        }
+
+        for item in emotions:
+            for emotion in item:
+                data[emotion] = data[emotion] + 1
+
         main_frame.destroy()
-        show_score_page = show_score.ShowScore(score, 3600 - seconds, nlps)
+        show_score_page = show_score.ShowScore(score, 3600 - seconds, nlps, data)
         show_score_page.create_frame()
 
 

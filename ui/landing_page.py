@@ -61,7 +61,6 @@ center_frame.pack(side="top", fill=BOTH, expand=True)
 
 
 def goto_exam_page(event=None):
-    print("hi")
     main_frame.destroy()
     import exam_page
 
