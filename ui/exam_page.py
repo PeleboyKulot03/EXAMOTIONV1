@@ -9,7 +9,7 @@ import customtkinter
 from PIL import Image, ImageTk
 import cv2
 from deepface import DeepFace
-
+import show_score
 
 # for mixing the cards
 is_first = True
@@ -20,11 +20,15 @@ cur_answer = 5
 q_and_a_holder = []
 nlps = []
 answers = []
+emotions = []
 answers_holder = []
 score = 0
 statics = static.Statics()
 questions = statics.get_questions()
 cap = cv2.VideoCapture(0)
+seconds = 3600
+get_emotion = False
+
 
 # Load DEEPFACE model
 model = DeepFace.build_model('Emotion')
@@ -34,59 +38,97 @@ emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutr
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 
-def show_frame():
-    _, frame = cap.read()
-    frame = cv2.flip(frame, 1)
-    # Convert frame to grayscale
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Detect faces in the frame
-    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=10, minSize=(30, 30))
-
-    for (x, y, w, h) in faces:
-        # Extract the face ROI (Region of Interest)
-        face_roi = gray_frame[y:y + h, x:x + w]
-
-        # Resize the face ROI to match the input shape of the model
-        resized_face = cv2.resize(face_roi, (48, 48), interpolation=cv2.INTER_AREA)
-
-        # Preprocess the image for DEEPFACE
-        normalized_face = resized_face / 255.0
-        reshaped_face = normalized_face.reshape(1, 48, 48, 1)
-
-        # Predict emotions using the pre-trained model
-        preds = model.predict(reshaped_face)
-        emotion_idx = np.argmax(preds)
-        emotion = emotion_labels[emotion_idx]
-
-        # Draw rectangle around face and label with predicted emotion
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        if emotion == "sad":
-            emotion = "bored"
-        elif emotion == "angry":
-            emotion = "frustration"
-        elif emotion == "happy":
-            emotion = "excited"
-        elif emotion == "disgust":
-            emotion = "confusion"
-
-        cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-
+def show_image(frame):
     cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
     img = Image.fromarray(cv2image)
     imgtk = ImageTk.PhotoImage(image=img)
     camera_frame.imgtk = imgtk
     camera_frame.configure(image=imgtk, width=200, height=300)
-    camera_frame.after(1, show_frame)
+    sleep(.01)
+    if is_destroy:
+        return
+    show_frame()
+
+
+def show_frame():
+    global get_emotion
+    while not is_destroy:
+        _, frame = cap.read()
+        frame = cv2.flip(frame, 1)
+        # Convert frame to grayscale
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Detect faces in the frame
+        faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=10, minSize=(30, 30))
+
+        for (x, y, w, h) in faces:
+            # Extract the face ROI (Region of Interest)
+            face_roi = gray_frame[y:y + h, x:x + w]
+
+            # Resize the face ROI to match the input shape of the model
+            resized_face = cv2.resize(face_roi, (48, 48), interpolation=cv2.INTER_AREA)
+
+            # Preprocess the image for DEEPFACE
+            normalized_face = resized_face / 255.0
+            reshaped_face = normalized_face.reshape(1, 48, 48, 1)
+
+            if get_emotion:
+                # Predict emotions using the pre-trained model
+                preds = model.predict(reshaped_face)
+                emotion_idx = np.argmax(preds)
+                emotion = emotion_labels[emotion_idx]
+
+                # Draw rectangle around face and label with predicted emotion
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                if emotion == "sad":
+                    emotion = "bored"
+                elif emotion == "angry":
+                    emotion = "frustration"
+                elif emotion == "happy":
+                    emotion = "excited"
+                elif emotion == "disgust":
+                    emotion = "confusion"
+
+                cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+                get_emotion = False
+                if question_counter+1 > len(emotions):
+                    emotions.append({(question_counter + 1): [emotion]})
+                else:
+                    temp_emotion = emotions[question_counter]
+                    temp_emotion[question_counter+1].append(emotion)
+
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(cv2image)
+        if not is_destroy:
+            imgtk = ImageTk.PhotoImage(image=img)
+            camera_frame.imgtk = imgtk
+            camera_frame.configure(image=imgtk, width=200, height=300)
+        sleep(.01)
+
+    # show_image_thread = threading.Thread(target=show_image, args=(frame, ))
+    # show_image_thread.start()
+    # show_image_thread.join()
 
 
 def set_enabled():
+    global get_emotion
     for i in range(15):
         if is_destroy:
             return
         sleep(1)
 
     next_button["state"] = "normal"
+
+
+def open_get_emotion():
+    print("hi")
+    global get_emotion
+
+    while not is_destroy:
+        for i in range(15):
+            sleep(1)
+
+        get_emotion = True
 
 
 class Stopper:
@@ -113,7 +155,6 @@ class TimerApp:
         self.root.title("Timer App")
 
         # Initialize timer variables
-        self.seconds = 3600
         self.timer_running = False
 
         # Update the timer display
@@ -128,10 +169,11 @@ class TimerApp:
         self.timer_running = False
 
     def update_timer(self):
+        global seconds
         if self.timer_running:
-            self.seconds -= 1
-            minutes = self.seconds // 60
-            seconds = self.seconds % 60
+            seconds -= 1
+            minutes = seconds // 60
+            seconds = seconds % 60
             time_str = f"{minutes:02}:{seconds:02}"
             timer.config(text=time_str)
             self.root.after(1000, self.update_timer)
@@ -276,7 +318,9 @@ def goto_next():
         next_button.config(text="Next")
         is_first = False
         timer_class.start_timer()
-        # stopper.start_thread()
+        stopper.start_thread()
+        emotion_getter = threading.Thread(target=open_get_emotion, args=())
+        emotion_getter.start()
         on_post = True
 
     elif question_counter < len(q_and_a_holder) - 1 and not on_post:
@@ -291,8 +335,8 @@ def goto_next():
         q_and_a_holder[question_counter].destroy()
         question_counter = question_counter + 1
         q_and_a_holder[question_counter].pack(fill="both", expand=True, padx=20, pady=10)
-        # next_button["state"] = "disabled"
-        # stopper.start_thread()
+        next_button["state"] = "disabled"
+        stopper.start_thread()
         counter.config(text=update_item_number())
         on_post = True
 
@@ -317,8 +361,10 @@ def goto_next():
         print(f"answers{answers}")
         print(f"nlps:{nlps}")
         print(f"score:{score}")
+        print(emotions)
         main_frame.destroy()
-        import show_score
+        show_score_page = show_score.ShowScore(score, 3600 - seconds, nlps)
+        show_score_page.create_frame()
 
 
 def radiobutton_event():

@@ -10,6 +10,7 @@ def splash_screen(frame):
     # ss.create_frame()
     import landing_page
 
+
 main_frame = Tk()
 main_frame.resizable(False, False)
 ws.FullScreenApp(main_frame)
