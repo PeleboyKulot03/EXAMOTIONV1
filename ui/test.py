@@ -1,16 +1,17 @@
-import json
-import requests
+from pymongo.mongo_client import MongoClient
+from dotenv import load_dotenv
+import os
 
-headers = {"Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjk2YzVlNDItMWJmYi00MjdjLWE3YmYtMTk1NTFiMWE3YjMwIiwidHlwZSI6ImFwaV90b2tlbiJ9.T8vEDl5ARjIWecUThzD3FI1zTOzq4xBbsMkEXZnWW9o"}
+load_dotenv()
 
-url = "https://api.edenai.run/v2/text/emotion_detection"
-payload = {
-    "providers": "nlpcloud,vernai",
-    "text": "I am angry!",
-    "fallback_providers": ""
-}
+# Replace the placeholder with your Atlas connection string
+uri = "mongodb+srv://juliusandrie28:r6vDShlcMCC1HaYT@testcluster.mgngbbc.mongodb.net/?retryWrites=true&w=majority"
+# Create a new client and connect to the server
+client = MongoClient(uri)
 
-response = requests.post(url, json=payload, headers=headers)
+collection = client['examotion']['test']
 
-result = json.loads(response.text)
-print(result["nlpcloud"]["items"])
+# find documents
+result = collection.find_one({"name": "Julius"})
+# print results
+print("Document found:\n", result)
