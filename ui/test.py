@@ -12,6 +12,6 @@ client = MongoClient(uri)
 collection = client['examotion']['test']
 
 # find documents
-result = collection.find_one({"name": "Julius"})
+result = collection.count_documents({'answers.0': "A"})
 # print results
 print("Document found:\n", result)

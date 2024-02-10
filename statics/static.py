@@ -183,6 +183,8 @@ class Statics:
             # }
         ]
 
+        self.answer_key = ["B", "D", "B"]
+
     def get_title(self):
         return self.title
 
@@ -197,3 +199,6 @@ class Statics:
 
     def get_questions(self):
         return self.questions
+
+    def get_answer_key(self):
+        return self.answer_key

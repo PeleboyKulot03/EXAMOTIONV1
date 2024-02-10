@@ -6,18 +6,12 @@ load_dotenv()
 
 
 class ExamPageModel:
-    def __init__(self, user_data):
+    def __init__(self):
         cluster = os.getenv("CLUSTER")
         uri = cluster
         client = MongoClient(uri)
         self.collection = client['examotion']['test']
 
-    def get_specific_data(self, name):
-        # find documents
-        result = self.collection.find_one({"name": f"{name}"})
-        # print results
-        print("Document found:\n", result)
-
-
-model = ExamPageModel("test")
-model.get_specific_data("Julius")
+    def add_data(self, data):
+        result = self.collection.insert_one(data)
+        print(result)

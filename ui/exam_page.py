@@ -10,6 +10,7 @@ from PIL import Image, ImageTk
 import cv2
 from deepface import DeepFace
 import show_score
+from utils import exam_page_model
 
 # for mixing the cards
 is_first = True
@@ -30,13 +31,13 @@ cap = cv2.VideoCapture(0)
 seconds = 3600
 starting_time = seconds
 get_emotion = False
-
+database = exam_page_model.ExamPageModel()
 
 # Load DEEPFACE model
 model = DeepFace.build_model('Emotion')
 # Define emotion labels
 emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
-
+key = ['A', 'B', 'C', 'D']
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 
@@ -93,9 +94,9 @@ def show_frame():
             elif emotion == "neutral":
                 emotion = "Neutral"
             elif emotion == "fear":
-                continue
+                emotion = "Nervous"
             elif emotion == "surprise":
-                continue
+                emotion = "Surprise"
 
             cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
@@ -123,23 +124,26 @@ def show_frame():
     # show_image_thread.join()
 
 
-def set_enabled():
+def open_get_emotion():
     global get_emotion
-    for i in range(15):
-        if is_destroy:
-            return
-        sleep(1)
+    while not is_destroy:
+        get_emotion = False
+        if on_post:
+            for i in range(2):
+                if is_destroy:
+                    return
+                sleep(1)
+            get_emotion = True
+        sleep(.15)
 
-    next_button["state"] = "normal"
 
-
-class Stopper:
-    def __init__(self):
-        self.thread = threading.Thread(target=set_enabled, args=())
-
-    def start_thread(self):
-        next_button["state"] = "disabled"
-        self.thread.start()
+# class Stopper:
+#     def __init__(self):
+#         self.thread = threading.Thread(target=set_enabled, args=())
+#
+#     def start_thread(self):
+#         next_button["state"] = "disabled"
+#         self.thread.start()
 
 
 class ShowAnsStopper:
@@ -264,7 +268,7 @@ def get_questions():
 def show_answer():
     global score
     correct_ans = questions[question_counter].get("correct") - 1
-    if correct_ans == cur_answer-1:
+    if correct_ans == cur_answer - 1:
         score += 1
 
     answer = answers_holder[question_counter]
@@ -297,7 +301,6 @@ def show_post_survey():
     post_survey.rowconfigure(0, weight=1)
     post_survey.rowconfigure(1, weight=2)
 
-    on_post = False
     timer_class.stop_timer()
     q_and_a_holder[question_counter].destroy()
     post_survey.pack(fill="both", expand=True, padx=20, pady=50)
@@ -323,7 +326,7 @@ def goto_next():
         is_first = False
         timer_class.start_timer()
         on_post = True
-        get_emotion = True
+        threading.Thread(target=open_get_emotion, args=()).start()
 
     elif question_counter < len(q_and_a_holder) - 1 and not on_post:
         post_survey_answer = what_do_you_feel.get("0.0", 'end-1c')
@@ -341,7 +344,6 @@ def goto_next():
         q_and_a_holder[question_counter].pack(fill="both", expand=True, padx=20, pady=10)
         counter.config(text=update_item_number())
         on_post = True
-        get_emotion = False
         print("hi")
         starting_time = seconds
 
@@ -351,10 +353,9 @@ def goto_next():
             messagebox.showinfo("showinfo", "Sorry but you haven't choose an answer yet!")
             return
 
-        get_emotion = True
-        print(question_counter)
+        on_post = False
         show_answer()
-        answers.append(cur_answer)
+        answers.append(key[cur_answer - 1])
         show_answer_stopper.start_thread()
         times.append(starting_time - seconds)
 
@@ -365,6 +366,7 @@ def goto_next():
             return
         nlps.append(post_survey_answer)
 
+        print(f"answers: {answers}")
         print(f"nlps:{nlps}")
         print(f"emotion:{emotions}")
         print(f"times:{times}")
@@ -373,15 +375,34 @@ def goto_next():
             'Frustration': 0,
             'Excited': 0,
             'Neutral': 0,
-            'Confusion': 0
+            'Confusion': 0,
+            'Nervous': 0,
+            'Surprise': 0
         }
 
         for item in emotions:
             for emotion in item:
                 data[emotion] = data[emotion] + 1
 
+        # get the average emotion for every number
+        final_emotion = []
+        for emotion in emotions:
+            final_emotion.append(max(emotion, key=emotion.count))
+
+        total_time = 3600 - seconds
+        data_model = {
+            'name': 'Test',
+            'answers': answers,
+            'cnns': final_emotion,
+            'nlps': nlps,
+            'score': score,
+            'time': total_time
+        }
+
+        database.add_data(data_model)
+
         main_frame.destroy()
-        show_score_page = show_score.ShowScore(score, 3600 - seconds, nlps, data)
+        show_score_page = show_score.ShowScore(score, total_time, data)
         show_score_page.create_frame()
 
 

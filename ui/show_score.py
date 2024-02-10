@@ -7,15 +7,16 @@ from matplotlib.backends.backend_tkagg import (
     NavigationToolbar2Tk
 )
 import matplotlib
+
 matplotlib.use("TkAgg")
 
 matplotlib.rcParams['toolbar'] = 'None'
 
+
 class ShowScore:
-    def __init__(self, score, time, nlps, data):
+    def __init__(self, score, time, data):
         self.main_frame = Tk()
         self.score = score
-        self.nlps = nlps
         self.time = time
         self.data = data
 
@@ -136,5 +137,3 @@ class ShowScore:
     def goto_landing_page(self, event=None):
         self.main_frame.destroy()
         import landing_page
-
-
