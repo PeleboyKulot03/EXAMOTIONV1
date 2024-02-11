@@ -11,7 +11,7 @@ class LoginPageModel:
         cluster = os.getenv("CLUSTER")
         uri = cluster
         client = MongoClient(uri)
-        self.collection = client['examotion']['test_credentials']
+        self.collection = client['examotion']['credentials']
 
     def login(self):
         user = self.collection.find_one({"username": self.username})

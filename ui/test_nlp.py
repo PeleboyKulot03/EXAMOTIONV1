@@ -1,39 +1,30 @@
 from transformers import pipeline
+import random as rand
 
 classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion', return_all_scores=False)
 
-paragraph = "I'm really scared. The test was so hard, and I'm worried I didn't do well at all.y"
+paragraph = "I am"
 prediction = classifier(paragraph, )
 
-
 pred = prediction[0]["label"]
+score = prediction[0]["score"]
+
+sad = ['Bored', 'Neutral']
 
 if pred == 'joy':
-    pred = 'excited'
-if pred == 'sad':
-    pred = 'bored'
+    pred = 'Excited'
+if pred == 'sadness':
+    pred = sad[rand.randint(0, 1)]
 elif pred == 'anger':
-    pred = 'frustrated'
+    pred = 'Frustrated'
+elif pred == 'surprise':
+    pred = 'Surprised'
+elif pred == 'fear':
+    pred = 'Nervous'
+
+if score < 0.60:
+    pred = "No Emotion"
 
 print(f"word: {paragraph}")
 print(f"prediction: {pred}")
 print(prediction)
-
-
-paragraph = "Wow, that exam was way different than I thought it would be. I'm genuinely surprised by the questions. It's Maam Ruth's fault."
-prediction = classifier(paragraph, )                                                                                                          
-
-
-pred = prediction[0]["label"]
-
-if pred == 'joy':
-    pred = 'excited'
-if pred == 'sad':
-    pred = 'bored'
-elif pred == 'anger':
-    pred = 'frustrated'
-
-print(f"word: {paragraph}")
-print(f"prediction: {pred}")
-print(prediction)
-

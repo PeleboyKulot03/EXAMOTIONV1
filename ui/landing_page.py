@@ -85,8 +85,7 @@ class LandingPage(Frame):
         start_image["border"] = "0"
         start_image.pack(side="top", pady=(70, 0))
         start_image.image = start_image_tk
-
-        # start_image.bind('<Button-1>', goto_exam_page)
+        start_image.bind('<Button-1>', lambda e: controller.show_frame('ExamPage'))
 
         border = Image.open('../resources/border_bottom.png')
         border = border.resize((600, 400), Image.LANCZOS)

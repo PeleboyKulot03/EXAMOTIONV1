@@ -10,7 +10,7 @@ class ExamPageModel:
         cluster = os.getenv("CLUSTER")
         uri = cluster
         client = MongoClient(uri)
-        self.collection = client['examotion']['test']
+        self.collection = client['examotion']['students']
 
     def add_data(self, data):
         result = self.collection.insert_one(data)
