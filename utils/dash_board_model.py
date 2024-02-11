@@ -9,7 +9,7 @@ from tempfile import TemporaryFile
 stats = static.Statics()
 answer_key = stats.get_answer_key()
 load_dotenv()
-emotions = ['Neutral', 'Excited', 'Bored', 'Nervous', 'Frustrated', 'Confused', 'Surprised']
+emotions = ['Neutral', 'Excited', 'Bored', 'Nervous', 'Frustrated', 'Surprised']
 
 
 class DashBoardModel:
@@ -18,7 +18,7 @@ class DashBoardModel:
         cluster = os.getenv("CLUSTER")
         uri = cluster
         client = MongoClient(uri)
-        self.collection = client['examotion']['test']
+        self.collection = client['examotion']['students']
         # Go back to the beginning and read data from file
         temp = ''
         for file in os.listdir(os.getcwd() + "\\myDir"):
@@ -56,5 +56,4 @@ class DashBoardModel:
 
     def get_users(self):
         result = list(self.collection.find({'from': self.admin}))
-        print(self.admin)
         return result

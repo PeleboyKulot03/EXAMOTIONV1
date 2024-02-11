@@ -13,29 +13,32 @@ matplotlib.use("TkAgg")
 matplotlib.rcParams['toolbar'] = 'None'
 
 
-class ShowScore:
-    def __init__(self, score, time, data):
-        self.main_frame = Tk()
+class ShowScore(Frame):
+    def __init__(self, parent, controller, score=1, time=1, data=None):
+        Frame.__init__(self, parent)
+        self.controller = controller
         self.score = score
         self.time = time
         self.data = data
+        self.config(bg='#2B2D42')
+
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=3)
+        self.rowconfigure(0, weight=1)
 
     def create_frame(self):
-        self.main_frame.resizable(False, False)
-        ws.FullScreenApp(self.main_frame)
-        self.main_frame.state('zoomed')
-        self.main_frame.config(bg='#2B2D42')
-
-        left_frame = Frame(self.main_frame, bg="#2B2D42")
+        left_frame = Frame(self, bg="#2B2D42")
         banner = Image.open("../resources/Done.png")
         banner_tk = ImageTk.PhotoImage(banner)
         banner_image = Label(left_frame, image=banner_tk)
         banner_image["bg"] = "#2B2D42"
         banner_image["border"] = "0"
         banner_image.pack(side="left", anchor="s", padx=20)
+        banner_image.image = banner_tk
+
         left_frame.grid(row=0, column=0, sticky="nsew")
 
-        right_frame = Frame(self.main_frame, bg="#2B2D42", padx=30)
+        right_frame = Frame(self, bg="#2B2D42", padx=30)
 
         # for timer and score
         upper_portion = Frame(right_frame, bg="#2B2D42", pady=40)
@@ -84,8 +87,11 @@ class ShowScore:
         chart_label.pack(side='top', anchor='n', fill=X)
         chart_holder = Frame(lower_portion)
 
-        languages = self.data.keys()
-        popularity = self.data.values()
+        languages = []
+        popularity = []
+        if self.data is not None:
+            languages = self.data.keys()
+            popularity = self.data.values()
 
         # create a figure
         figure = Figure(figsize=(1, 3), dpi=100)
@@ -123,17 +129,11 @@ class ShowScore:
         start_image["bg"] = "#2B2D42"
         start_image["border"] = "0"
         start_image.pack(side='top', anchor='n', expand=True)
+        start_image.image = start_image_tk
         start_image.bind('<Button-1>', self.goto_landing_page)
 
         right_frame.grid(row=0, column=1, sticky="nsew", pady=100)
         right_frame.columnconfigure(0, weight=1)
 
-        self.main_frame.grid_columnconfigure(0, weight=0)
-        self.main_frame.grid_columnconfigure(1, weight=3)
-
-        self.main_frame.rowconfigure(0, weight=1)
-        self.main_frame.mainloop()
-
     def goto_landing_page(self, event=None):
-        self.main_frame.destroy()
-        import landing_page
+        self.controller.show_frame("LandingPage")

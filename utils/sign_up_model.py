@@ -11,7 +11,7 @@ class SignUpModel:
         cluster = os.getenv("CLUSTER")
         uri = cluster
         self.client = MongoClient(uri)
-        self.collection = self.client['examotion']['test_credentials']
+        self.collection = self.client['examotion']['credentials']
 
     def sign_up(self):
         user = self.collection.find_one({"username": self.username})

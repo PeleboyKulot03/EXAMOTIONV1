@@ -234,6 +234,8 @@ class DashBoard(Frame):
         global buttons_holder
 
         counter = 0
+        buttons.clear()
+        buttons_holder.clear()
         for item in self.users:
             detailed_holder = Frame(self.scrollable_users, bg="#FE3F56")
             detailed_holder.pack(side='top', fill=X, pady=(0, 20))
@@ -277,6 +279,7 @@ class DashBoard(Frame):
         self.right_frame.destroy()
         self.scrollable_users.pack(side='top', fill=BOTH, padx=(40, 0), pady=(0, 20), expand=True)
         user_frame.clear()
+
         for item in self.users:
             right_frame = Frame(self.scrollable_frame, bg="#2B2D42", padx=20, pady=10)
 
@@ -313,6 +316,20 @@ class DashBoard(Frame):
             time = Label(time_card_holder, bg="white", text=time_text, font=("Arial", 25), width=10, pady=10)
             time.pack(side='left', padx=(0, 10), fill=X, expand=True)
 
+            data = {
+                'Bored': 0,
+                'Frustrated': 0,
+                'Excited': 0,
+                'Neutral': 0,
+                'Nervous': 0,
+                'Surprised': 0,
+            }
+
+            for emotion in item['cnns']:
+                if not emotion == "No Emotion":
+                    data[emotion] = data[emotion] + 1
+
+
             # CNN results
             cnn_holder = Frame(right_frame, bg="#2B2D42", height=20)
             cnn_holder.grid(row=1, column=0, sticky="nsew", padx=(0, 20))
@@ -320,11 +337,8 @@ class DashBoard(Frame):
             cnn_card_holder = customtkinter.CTkFrame(cnn_holder, fg_color="#DC2F02", corner_radius=10, height=20)
             cnn_card_holder.pack(side='top', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
 
-            # cnn = Label(cnn_card_holder, bg="white", height=20)
-            # cnn.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
-
-            y_cnn = self.cnns.keys()
-            x_cnn = self.cnns.values()
+            y_cnn = data.keys()
+            x_cnn = data.values()
 
             # create a figure
             figure = Figure(figsize=(1, 4), dpi=65)
@@ -354,8 +368,21 @@ class DashBoard(Frame):
             # nlp = Label(nlp_card_holder, bg="white", height=20)
             # nlp.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
 
-            y_nlps = self.nlps.keys()
-            x_nlps = self.nlps.values()
+            data = {
+                'Bored': 0,
+                'Frustrated': 0,
+                'Excited': 0,
+                'Neutral': 0,
+                'Nervous': 0,
+                'Surprised': 0,
+            }
+
+            for emotion in item['nlps']:
+                if not emotion == "No Emotion":
+                    data[emotion] = data[emotion] + 1
+
+            y_nlps = data.keys()
+            x_nlps = data.values()
 
             # create a figure
             figure = Figure(figsize=(1, 3), dpi=65)
@@ -432,7 +459,8 @@ class DashBoard(Frame):
 
             user_frame.append(right_frame)
 
-        user_frame[cur_user].pack(side='top', fill=BOTH, expand=True)
+        if len(user_frame) > 0:
+            user_frame[cur_user].pack(side='top', fill=BOTH, expand=True)
 
     # def go_to_login(self, none=None):
     #     self.main_frame.destroy()
