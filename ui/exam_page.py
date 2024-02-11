@@ -32,12 +32,14 @@ seconds = 3600
 starting_time = seconds
 get_emotion = False
 database = exam_page_model.ExamPageModel()
+final_name = ""
 
 # Load DEEPFACE model
 model = DeepFace.build_model('Emotion')
 # Define emotion labels
 emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 key = ['A', 'B', 'C', 'D']
+
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 
@@ -204,7 +206,7 @@ def get_questions():
                                                 text=item.get("question"),
                                                 font=("Helvetica", 25),
                                                 justify='center',
-                                                wraplength=700,
+                                                wraplength=600,
                                                 fg_color="#EDF2F4",
                                                 corner_radius=10,
                                                 )
@@ -226,7 +228,7 @@ def get_questions():
                                            command=lambda: on_click(2),
                                            font=("Arial", 20),
                                            text_color="black",
-                                           hover_color='#c4c4c4'
+                                           hover_color='#c4c4c4',
                                            )
 
         answer_3 = customtkinter.CTkButton(master=question_holder,
@@ -236,7 +238,7 @@ def get_questions():
                                            command=lambda: on_click(3),
                                            font=("Arial", 20),
                                            text_color="black",
-                                           hover_color='#c4c4c4'
+                                           hover_color='#c4c4c4',
                                            )
 
         answer_4 = customtkinter.CTkButton(master=question_holder,
@@ -246,14 +248,19 @@ def get_questions():
                                            command=lambda: on_click(4),
                                            font=("Arial", 20),
                                            text_color="black",
-                                           hover_color='#c4c4c4'
+                                           hover_color='#c4c4c4',
                                            )
 
-        question_label.grid(column=0, row=0, columnspan=2, sticky="nsew", padx=20, pady=20)
-        answer_1.grid(column=0, row=1, sticky="nsew", padx=20, pady=20)
-        answer_2.grid(column=1, row=1, sticky="nsew", padx=20, pady=20)
-        answer_3.grid(column=0, row=2, sticky="nsew", padx=20, pady=20)
-        answer_4.grid(column=1, row=2, sticky="nsew", padx=20, pady=20)
+        question_label.grid(column=0, row=0, columnspan=2, sticky="nsew", padx=10, pady=20, ipady=60)
+        answer_1.grid(column=0, row=1, sticky="nsew", padx=10, pady=(0, 10), ipady=60)
+        answer_2.grid(column=1, row=1, sticky="nsew", padx=(0, 10), pady=(0, 10), ipady=60)
+        answer_3.grid(column=0, row=2, sticky="nsew", padx=10, pady=(0, 20), ipady=60)
+        answer_4.grid(column=1, row=2, sticky="nsew", padx=(0, 10), pady=(0, 20), ipady=60)
+
+        answer_1._text_label.configure(wraplength=350, justify=CENTER)
+        answer_2._text_label.configure(wraplength=350, justify=CENTER)
+        answer_3._text_label.configure(wraplength=350, justify=CENTER)
+        answer_4._text_label.configure(wraplength=350, justify=CENTER)
 
         question_holder.grid_columnconfigure(0, weight=1)
         question_holder.grid_columnconfigure(1, weight=1)
@@ -290,9 +297,10 @@ def show_post_survey():
                                           font=("Arial", 25),
                                           corner_radius=10,
                                           fg_color="#EDF2F4",
+                                          height=80,
                                           justify=LEFT)
 
-    what_do_you_feel = customtkinter.CTkTextbox(master=post_survey, font=("Arial", 20), corner_radius=10)
+    what_do_you_feel = customtkinter.CTkTextbox(master=post_survey, font=("Arial", 20), corner_radius=10, height=300)
     prompt_label.grid(column=0, row=0, sticky="nsew", padx=40, pady=(60, 20))
     what_do_you_feel.grid(column=0, row=1, sticky="nsew", padx=40, pady=(0, 60))
     what_do_you_feel.focus_set()
@@ -303,7 +311,7 @@ def show_post_survey():
 
     timer_class.stop_timer()
     q_and_a_holder[question_counter].destroy()
-    post_survey.pack(fill="both", expand=True, padx=20, pady=50)
+    post_survey.pack(fill="both", expand=True)
 
 
 def goto_next():
@@ -318,10 +326,15 @@ def goto_next():
     global get_emotion
     global times
     global starting_time
+    global final_name
 
     if is_first:
+        if name.get() == "":
+            messagebox.showinfo("showinfo", "Sorry but pre-survey is a required field!")
+            return
+        final_name = name.get()
         pre_survey.destroy()
-        q_and_a_holder[question_counter].pack(fill="both", expand=True, padx=20, pady=10)
+        q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
         next_button.config(text="Next")
         is_first = False
         timer_class.start_timer()
@@ -341,7 +354,7 @@ def goto_next():
         timer_class.start_timer()
         q_and_a_holder[question_counter].destroy()
         question_counter = question_counter + 1
-        q_and_a_holder[question_counter].pack(fill="both", expand=True, padx=20, pady=10)
+        q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
         counter.config(text=update_item_number())
         on_post = True
         print("hi")
@@ -391,12 +404,13 @@ def goto_next():
 
         total_time = 3600 - seconds
         data_model = {
-            'name': 'Test',
+            'name': final_name,
             'answers': answers,
             'cnns': final_emotion,
             'nlps': nlps,
             'score': score,
-            'time': total_time
+            'time': total_time,
+            'times': times
         }
 
         database.add_data(data_model)
@@ -411,7 +425,7 @@ def radiobutton_event():
 
 
 main_frame = Tk()
-main_frame.resizable(False, False)
+# main_frame.resizable(False, False)
 main_frame.config(bg='black')
 main_frame.title(statics.get_title())
 ws.FullScreenApp(main_frame)
@@ -420,22 +434,41 @@ main_frame.state('zoomed')
 timer_class = TimerApp(main_frame)
 
 # center frame
-center_frame = Frame(main_frame)
-center_frame.grid(row=0, column=0, sticky="nsew")
+scrollable_frame = customtkinter.CTkScrollableFrame(main_frame, fg_color="#2B2D42")
+scrollable_frame.grid(row=0, column=0, sticky="nsew")
+
+center_frame = Frame(scrollable_frame)
+center_frame.pack(side='top', expand=True, padx=40, fill=BOTH)
 
 # for the pre-survey
 
-instructions = customtkinter.CTkLabel(master=center_frame,
-                                      font=("Arial", 20),
-                                      text_color="white",
-                                      wraplength=1100,
-                                      height=100,
-                                      justify='left',
-                                      text="Instructions:\n\nSimilarly, the emotions section can be rated on the same scale, with 1 representing 'Not Expressive,' 2 representing 'Slightly Expressive,' 3 representing 'Moderately Expressive,' 4 representing 'Very Expressive,' and 5 representing 'Extremely Expressive.'"
-                                      )
-instructions.pack(fill='x', padx=40, pady=20)
+instructions = Label(master=center_frame,
+                     font=("Arial", 15),
+                     justify='left',
+                     anchor='w',
+                     bg="#2B2D42",
+                     fg="white",
+                     wraplength=800,
+                     text="Instructions:\n\nSimilarly, the emotions section can be rated on the same "
+                          "scale, with 1 representing 'Not Expressive,' 2 representing 'Slightly "
+                          "Expressive,' 3 representing 'Moderately Expressive,' 4 representing 'Very "
+                          "Expressive,' and 5 representing 'Extremely Expressive.'"
+                     )
+instructions.pack(side='top', fill=X, pady=20)
 
 pre_survey = customtkinter.CTkFrame(master=center_frame, fg_color="#8D99AE")
+
+name_label = customtkinter.CTkLabel(pre_survey, text="Name", font=("Arial", 25))
+name_label.pack(side='top', anchor='w', padx=40, pady=(60, 20))
+
+name = customtkinter.CTkEntry(pre_survey,
+                              placeholder_text="Name",
+                              font=("Arial", 25),
+                              height=50,
+                              corner_radius=30)
+
+name.pack(side='top', padx=40, pady=(0, 10), fill=X)
+
 prompt_label_pre = customtkinter.CTkLabel(master=pre_survey,
                                           text=f"What do you feel answering question number {question_counter + 1}?",
                                           font=("Arial", 25),
@@ -443,7 +476,7 @@ prompt_label_pre = customtkinter.CTkLabel(master=pre_survey,
                                           fg_color="#EDF2F4",
                                           justify=LEFT)
 
-prompt_label_pre.grid(column=0, row=0, sticky="nsew", padx=40, pady=(60, 20))
+prompt_label_pre.pack(side='top', anchor='w', padx=40, pady=20)
 
 radio_var = IntVar(value=0)
 radiobutton_1 = customtkinter.CTkRadioButton(pre_survey, text="CTkRadioButton 1",
@@ -459,20 +492,20 @@ radiobutton_4 = customtkinter.CTkRadioButton(pre_survey, text="CTkRadioButton 4"
                                              font=("Arial", 20),
                                              command=radiobutton_event, variable=radio_var, value=2, fg_color="#EDF2F4")
 
-radiobutton_1.grid(column=0, row=1, sticky="nsew", padx=40)
-radiobutton_2.grid(column=0, row=2, sticky="nsew", padx=40)
-radiobutton_3.grid(column=0, row=3, sticky="nsew", padx=40)
-radiobutton_4.grid(column=0, row=4, sticky="nsew", padx=40)
+radiobutton_1.pack(side='top', anchor='w', padx=40)
+radiobutton_2.pack(side='top', anchor='w', padx=40)
+radiobutton_3.pack(side='top', anchor='w', padx=40)
+radiobutton_4.pack(side='top', anchor='w', padx=40, pady=(0, 40))
 
-pre_survey.grid_rowconfigure(0, weight=2)
-pre_survey.grid_rowconfigure(1, weight=1)
-pre_survey.grid_rowconfigure(2, weight=1)
-pre_survey.grid_rowconfigure(3, weight=1)
-pre_survey.grid_rowconfigure(4, weight=1)
+# pre_survey.grid_rowconfigure(0, weight=0)
+# pre_survey.grid_rowconfigure(1, weight=2)
+# pre_survey.grid_rowconfigure(2, weight=1)
+# pre_survey.grid_rowconfigure(3, weight=1)
+# pre_survey.grid_rowconfigure(4, weight=1)
+# pre_survey.grid_rowconfigure(5, weight=1)
+# pre_survey.grid_columnconfigure(0, weight=1)
 
-pre_survey.grid_columnconfigure(0, weight=1)
-
-pre_survey.pack(fill="both", expand=True, padx=40, pady=20)
+pre_survey.pack(fill="both", expand=True, side='top')
 
 next_holder = Frame(center_frame)
 
@@ -491,7 +524,7 @@ next_button = Button(next_holder, text="Start Exam",
 divider = customtkinter.CTkLabel(master=next_holder, text="", corner_radius=1, fg_color="#FE3F56", height=48, width=10)
 divider1 = customtkinter.CTkLabel(master=next_holder, text="", corner_radius=1, fg_color="#FE3F56", height=48, width=10)
 
-next_holder.pack(side="bottom", anchor="e", padx=(0, 40), pady=20)
+next_holder.pack(side="bottom", anchor="e", pady=20)
 divider.pack(side="right")
 next_button.pack(side="right")
 divider1.pack(side="right")
@@ -536,13 +569,18 @@ camera_frame.grid(row=1, column=0, padx=(0, 20), sticky='we')
 
 right_frame.columnconfigure(0, weight=1)
 
-main_frame.grid_columnconfigure(0, weight=3)
-main_frame.grid_columnconfigure(1, weight=2)
-main_frame.rowconfigure(0, weight=1)
+main_frame.grid_columnconfigure(0, weight=1)
+main_frame.grid_columnconfigure(1, weight=0)
+# scrollable_frame.grid_columnconfigure(0, weight=1)
+# scrollable_frame.grid_columnconfigure(1, weight=0)
+main_frame.grid_rowconfigure(0, weight=1)
+
 main_frame.protocol("WM_DELETE_WINDOW", on_close)
 main_frame.config(bg='#2B2D42')
 right_frame.config(bg='#2B2D42')
 center_frame.config(bg='#2B2D42')
+center_frame.grid_rowconfigure(0, weight=0)
+center_frame.grid_rowconfigure(1, weight=1)
 
 # starting the opencv
 camera_thread = threading.Thread(target=show_frame, args=())

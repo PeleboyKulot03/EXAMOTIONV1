@@ -97,13 +97,13 @@ class Statics:
             # {
             #     "question": "11. In C++, what is the difference between function overloading and function overriding? ",
             #     1: "A. Overriding allows multiple functions with"
-            #        "\n the same name in the same scope, "
-            #        "\nwhile overloading is for derived classes "
-            #        "\nreplacing base class functions.",
+            #        " the same name in the same scope, "
+            #        "while overloading is for derived classes "
+            #        "replacing base class functions.",
             #     2: "B. Overloading allows multiple functions"
-            #        "\n with the same name in the same scope,"
-            #        "\n while overriding is for derived classes "
-            #        "\nreplacing base class functions.",
+            #        " with the same name in the same scope,"
+            #        " while overriding is for derived classes "
+            #        "replacing base class functions.",
             #     3: "C. Both are the same; they are used interchangeably.",
             #     4: "D. Overloading and overriding are not allowed in C++.",
             #     "correct": 2

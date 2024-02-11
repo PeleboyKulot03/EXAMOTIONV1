@@ -1,21 +1,20 @@
 from tkinter import *
-from statics import static, password_hasher, globals
+from statics import static, password_hasher
 from tkinter import messagebox
 from PIL import ImageTk, Image
-from utils import login_model
+from utils import sign_up_model
 import customtkinter
-import tempfile
-import os
 
-global_var = globals.Globals()
 statics = static.Statics()
 is_show = False
+is_show_confirm = False
 show_image = customtkinter.CTkImage(light_image=Image.open('../resources/show.png'), size=(40, 40))
 hide_image = customtkinter.CTkImage(light_image=Image.open('../resources/hidden.png'), size=(40, 40))
-banner_image = customtkinter.CTkImage(light_image=Image.open('../resources/login_banner.png'), size=(400, 400))
+banner_image = customtkinter.CTkImage(light_image=Image.open('../resources/sign_up_banner.png'), size=(400, 400))
 
 
-def validate(username, password, controller):
+def validate(username, password, confirm_password, controller):
+
     if len(username.get()) == 0:
         messagebox.showinfo("Credentials Required", "Sorry but username is a required field!")
         return
@@ -24,22 +23,23 @@ def validate(username, password, controller):
         messagebox.showinfo("Credentials Required", "Sorry but password is a required field!")
         return
 
-    if login_model.LoginPageModel(username.get(), password_hasher.hash_password(password.get())).login():
-        # Create a temporary file and write some data to it
-        for file in os.listdir(os.getcwd() + "\\myDir"):
-            os.remove(os.path.join(os.getcwd() + "\\myDir", file))
+    if len(confirm_password.get()) == 0:
+        messagebox.showinfo("Credentials Required", "Sorry but confirm password is a required field!")
+        return
 
-        tempfile.NamedTemporaryFile(dir='myDir', suffix=f'.{username.get()}', delete=False)
-        username.delete(0, END)
-        password.delete(0, END)
+    if not password.get() == confirm_password.get():
+        messagebox.showinfo("Credentials Required", "Password does not match!")
+        return
+
+    verdict, message = sign_up_model.SignUpModel(username.get(), password_hasher.hash_password(password.get())).sign_up()
+    if verdict:
         controller.show_frame("LandingPage")
-
         return
     else:
-        messagebox.showinfo("Credentials Required", "Incorrect username or password!")
+        messagebox.showinfo("Credentials Required", message)
 
 
-class LoginPage(Frame):
+class SignUp(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
 
@@ -77,7 +77,7 @@ class LoginPage(Frame):
         policy.image = policy_tk
 
         # center frame
-        center_frame = Frame(self, width=0, height=0, padx=100, pady=50)
+        center_frame = Frame(self, width=0, height=0, padx=100, pady=30)
         center_frame.config(bg='#8D99AE')
         center_frame.pack(side="top", fill=BOTH, expand=True)
 
@@ -99,12 +99,12 @@ class LoginPage(Frame):
         form.pack(side='top', fill=BOTH, expand=True, padx=(0, 10))
 
         # login text
-        login_image = Image.open("../resources/login_text.png")
+        login_image = Image.open("../resources/sign_up_text.png")
         login_tk = ImageTk.PhotoImage(login_image)
         login = Label(form, image=login_tk)
         login["bg"] = "#EDF2F4"
         login["border"] = "0"
-        login.pack(side='top', padx=(100, 0), pady=50)
+        login.pack(side='top', padx=(100, 0), pady=70)
         login.image = login_tk
 
         username_holder = Frame(form, bg='#EDF2F4')
@@ -164,27 +164,61 @@ class LoginPage(Frame):
         self.password_toggle.pack(side='left', fill=Y)
         self.password_toggle.image = is_show
 
+        confirm_password_holder = Frame(form, bg='#EDF2F4')
+        confirm_password_holder.pack(side='top', anchor='w', fill=X, padx=40, pady=10)
+        confirm_password_icon = Label(confirm_password_holder, image=password_icon_tk)
+        confirm_password_icon["bg"] = "#EDF2F4"
+        confirm_password_icon["border"] = "0"
+        confirm_password_icon.pack(side='left', padx=(0, 20))
+        confirm_password_icon.image = password_icon_tk
+
+        confirm_password_card_holder = customtkinter.CTkFrame(confirm_password_holder, corner_radius=10, fg_color="#555580")
+        confirm_password_card_holder.pack(side='left', fill=X, padx=(10, 0), expand=True)
+
+        self.confirm_password = customtkinter.CTkEntry(confirm_password_card_holder,
+                                                       placeholder_text="Confirm Password",
+                                                       font=("Arial", 25),
+                                                       border_width=0,
+                                                       corner_radius=0,
+                                                       height=55)
+        self.confirm_password.configure(show='●')
+        self.confirm_password.pack(side='left', padx=(5, 0), fill=X, expand=True)
+
+        self.confirm_password_toggle = customtkinter.CTkButton(confirm_password_card_holder, width=10, text="",
+                                                               corner_radius=0,
+                                                               hover=False,
+                                                               border_width=0,
+                                                               image=show_image,
+                                                               cursor="hand2",
+                                                               fg_color="#F8F9FA",
+                                                               command=lambda: self.toggle_confirm())
+        self.confirm_password_toggle["border"] = "0"
+        self.confirm_password_toggle.pack(side='left', fill=Y)
+        self.confirm_password_toggle.image = is_show
+
         login_holder = customtkinter.CTkFrame(form, corner_radius=10, fg_color="#FAA307")
         login_holder.pack(side='top', padx=(120, 40), pady=(30, 10), fill=X)
         login = customtkinter.CTkButton(login_holder,
-                                        text="LOGIN",
+                                        text="SIGN UP",
                                         font=("Helvetica", 25, "bold"),
                                         height=55,
                                         fg_color="white",
                                         hover_color="#c4c4c4",
-                                        command=lambda: validate(self.username, self.password, controller),
+                                        command=lambda: validate(self.username,
+                                                                 self.password,
+                                                                 self.confirm_password, controller),
                                         text_color="#000000")
         login.pack(side='top', padx=5, fill=X)
 
         back_to_homepage_holder = customtkinter.CTkFrame(form, corner_radius=10, fg_color="#FE3F56")
         back_to_homepage_holder.pack(side='top', padx=(120, 40), pady=10, fill=X)
         back_to_homepage = customtkinter.CTkButton(back_to_homepage_holder,
-                                                   text="SIGN UP",
+                                                   text="LOGIN",
                                                    font=("Helvetica 18 bold", 25, "bold"),
                                                    height=55,
                                                    fg_color="white",
                                                    hover_color="#c4c4c4",
-                                                   command=lambda: controller.show_frame("SignUp"),
+                                                   command=lambda: controller.show_frame("LoginPage"),
                                                    text_color="#000000")
 
         back_to_homepage.pack(side='top', padx=5, fill=X)
@@ -200,3 +234,15 @@ class LoginPage(Frame):
         self.password_toggle.configure(image=hide_image)
         self.password.configure(show='')
         is_show = True
+
+    def toggle_confirm(self):
+        global is_show_confirm
+        if is_show_confirm:
+            self.confirm_password_toggle.configure(image=show_image)
+            self.confirm_password.configure(show='●')
+            is_show_confirm = False
+            return
+
+        self.confirm_password_toggle.configure(image=hide_image)
+        self.confirm_password.configure(show='')
+        is_show_confirm = True

@@ -21,7 +21,7 @@ print(prediction)
 
 
 paragraph = "Wow, that exam was way different than I thought it would be. I'm genuinely surprised by the questions. It's Maam Ruth's fault."
-prediction = classifier(paragraph, )
+prediction = classifier(paragraph, )                                                                                                          
 
 
 pred = prediction[0]["label"]

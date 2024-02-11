@@ -1,8 +1,8 @@
 from tkinter import *
-import window_setter as ws
 from PIL import ImageTk, Image
 import os
 import customtkinter
+from statics import globals
 from utils import dash_board_model
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (
@@ -11,17 +11,17 @@ from matplotlib.backends.backend_tkagg import (
 import matplotlib
 
 matplotlib.use("TkAgg")
-database = dash_board_model.DashBoardModel()
+global_var = globals.Globals()
 is_on = ''
 buttons = []
 buttons_holder = []
 user_frame = []
 cur_user = 0
+is_first = True
 
 
 def user_click(user):
     global cur_user
-
     user_frame[cur_user].pack_forget()
     user_frame[user].pack(side='top', fill=BOTH, expand=True)
 
@@ -34,52 +34,42 @@ def user_click(user):
     buttons_holder[cur_user].config(bg='#FEE440')
 
 
-class DashBoard:
-    def __init__(self):
-        self.detailed_divider = None
-        self.detailed_holder = None
-        self.over_all_holder = None
-        self.detailed = None
-        self.over_all = None
-        self.center_frame = None
-        self.scrollable_frame = None
+class DashBoard(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        database = dash_board_model.DashBoardModel()
         self.right_frame = None
-        self.scrollable_users = None
-        self.main_frame = Tk()
+        self.scrollable_frame = None
         self.frequency = database.get_frequency()
         self.cnns = database.get_cnn()
         self.nlps = database.get_nlp()
         self.users = database.get_users()
 
-    def create_frame(self):
-        # self.main_frame.resizable(False, False)
-        self.main_frame.config(bg='#2B2D42')
-        ws.FullScreenApp(self.main_frame)
-        self.main_frame.state('zoomed')
-
         # toolbar
-        tool_bar = Frame(self.main_frame, width=0)
+        tool_bar = Frame(self, width=0)
         tool_bar.config(bg="#EDF2F4")
         tool_bar.pack(fill=X, side="top")
 
-        self.center_frame = Frame(self.main_frame, bg="#2B2D42")
+        self.center_frame = Frame(self, bg="#2B2D42")
         self.center_frame.pack(fill=BOTH, side="top", expand=True)
 
         # components of the toolbar
-        path = Image.open("../resources/examotion.png")
-        path = path.resize((200, 50), Image.LANCZOS)
+        path = Image.open("../resources/back.png")
+        path = path.resize((50, 50), Image.LANCZOS)
         image = ImageTk.PhotoImage(path)
-        logo = Label(tool_bar, image=image)
+        logo = Label(tool_bar, image=image, cursor='hand2')
         logo.pack(side='left', padx=50, pady=10)
+        logo.bind('<Button-1>', lambda e: controller.show_frame("LandingPage"))
+        logo.image = image
 
         # login for admin
-        login_image = Image.open(os.path.abspath("../resources/logout.png"))
-        login_image = login_image.resize((150, 50), Image.LANCZOS)
-        login_tk = ImageTk.PhotoImage(login_image)
-        login = Label(tool_bar, image=login_tk, cursor="hand2")
-        login["bg"] = "#EDF2F4"
-        login["border"] = "0"
-        login.pack(side='right', padx=40, pady=10)
+        logout_image = Image.open(os.path.abspath("../resources/dash_board_text.png"))
+        logout_tk = ImageTk.PhotoImage(logout_image)
+        logout = Label(tool_bar, image=logout_tk)
+        logout["bg"] = "#EDF2F4"
+        logout["border"] = "0"
+        logout.pack(side='right', padx=40, pady=10, fill=X, expand=True)
+        logout.image = logout_tk
 
         # for sidebar
         side_bar = Frame(self.center_frame, bg="#8D99AE")
@@ -91,24 +81,22 @@ class DashBoard:
         self.over_all_divider = Label(self.over_all_holder, text=" ", bg="#FEE440", font=("Arial", 1))
         self.over_all_divider.pack(side='left', fill=Y)
 
-        self.over_all = Label(self.over_all_holder, text="Overall", fg="#FEE440", bg="#2B2D42", font=("Arial", 20), width=15, cursor='hand2')
+        self.over_all = Label(self.over_all_holder, text="Overall", fg="#FEE440", bg="#2B2D42", font=("Arial", 20),
+                              width=15, cursor='hand2')
         self.over_all.bind("<Button-1>", self.create_overall)
         self.over_all.pack(side='left', fill=X, expand=True, pady=10)
 
         self.detailed_holder = Frame(side_bar, bg="white")
         self.detailed_holder.pack(side='top', fill=X, padx=(20, 0), pady=(0, 30))
         self.scrollable_users = customtkinter.CTkScrollableFrame(side_bar, fg_color="#8D99AE")
-        self.scrollable_users.pack(side='top', fill=BOTH, padx=(40, 0), pady=(0, 20))
-        self.create_user()
+        self.scrollable_users.pack(side='top', fill=BOTH, padx=(40, 0), pady=(0, 20), expand=True)
         self.detailed_divider = Label(self.detailed_holder, text=" ", bg="#FE3F56", font=("Arial", 1))
         self.detailed_divider.pack(side='left', fill=Y)
 
-        self.detailed = Label(self.detailed_holder, text="Detailed", fg="black", bg="white", font=("Arial", 20), cursor='hand2')
+        self.detailed = Label(self.detailed_holder, text="Detailed", fg="black", bg="white", font=("Arial", 20),
+                              cursor='hand2')
         self.detailed.bind("<Button-1>", self.detailed_click)
         self.detailed.pack(side='left', fill=X, expand=True, pady=10)
-
-        self.create_overall(None)
-        self.main_frame.mainloop()
 
     def create_overall(self, none):
         global is_on
@@ -137,9 +125,6 @@ class DashBoard:
         tabulation_card_holder = customtkinter.CTkFrame(tabulation_holder, fg_color="#DC2F02", corner_radius=10,
                                                         height=20)
         tabulation_card_holder.pack(side='top', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
-
-        # tabulation = Label(tabulation_card_holder, bg="white", height=20)
-        # tabulation.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
 
         y = self.frequency.keys()
         x = self.frequency.values()
@@ -264,15 +249,22 @@ class DashBoard:
             buttons.append(user)
             user.pack(side='left', fill=X, expand=True, padx=(5, 0))
 
-        buttons[cur_user].configure(text_color='#FEE440')
-        buttons_holder[cur_user].config(bg='#FEE440')
+        if len(buttons) > 0:
+            buttons[cur_user].configure(text_color='#FEE440')
+            buttons_holder[cur_user].config(bg='#FEE440')
 
     def detailed_click(self, none):
         global is_on
         global user_frame
 
+        # if is_first:
+        #     users = database.get_users()
+        #     self.create_user()
+        #     is_first = False
+
         if is_on == 'Detailed':
             return
+
         is_on = 'Detailed'
         self.over_all.config(fg="black", bg="white")
         self.detailed.config(fg="#FEE440", bg="#2B2D42")
@@ -283,7 +275,7 @@ class DashBoard:
 
         # for the detailed
         self.right_frame.destroy()
-        self.scrollable_users.pack(side='top', fill=BOTH, padx=(40, 0), pady=(0, 20))
+        self.scrollable_users.pack(side='top', fill=BOTH, padx=(40, 0), pady=(0, 20), expand=True)
         user_frame.clear()
         for item in self.users:
             right_frame = Frame(self.scrollable_frame, bg="#2B2D42", padx=20, pady=10)
@@ -298,7 +290,8 @@ class DashBoard:
             score_card_holder = customtkinter.CTkFrame(score_holder, fg_color="#DC2F02", corner_radius=10, height=20)
             score_card_holder.pack(side='top', fill=BOTH, pady=10, expand=True)
 
-            score = Label(score_card_holder, bg="white", text=f"{item['score']}/30", font=("Arial", 25), width=10, pady=10)
+            score = Label(score_card_holder, bg="white", text=f"{item['score']}/30", font=("Arial", 25), width=10,
+                          pady=10)
 
             score.pack(side='left', padx=(0, 10), fill=X, expand=True)
 
@@ -408,17 +401,21 @@ class DashBoard:
                                                                                                    sticky='nsew')
 
             for i in range(3):
-                Label(summary, text=i+1, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i+1, column=0,
-                                                                                                 sticky='nsew')
-                Label(summary, text=item['answers'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i+1, column=1,
-                                                                                                 sticky='nsew')
-                Label(summary, text=item['times'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i+1, column=2,
-                                                                                                  sticky='nsew')
-                Label(summary, text=item['cnns'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i+1, column=3,
-                                                                                                       sticky='nsew')
-                Label(summary, text=item['nlps'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i+1, column=4,
-                                                                                                       sticky='nsew')
-                Label(summary, text="Hard", font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i+1, column=5,
+                Label(summary, text=i + 1, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=0,
+                                                                                                   sticky='nsew')
+                Label(summary, text=item['answers'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                    row=i + 1, column=1,
+                    sticky='nsew')
+                Label(summary, text=item['times'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
+                                                                                                              column=2,
+                                                                                                              sticky='nsew')
+                Label(summary, text=item['cnns'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
+                                                                                                             column=3,
+                                                                                                             sticky='nsew')
+                Label(summary, text=item['nlps'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
+                                                                                                             column=4,
+                                                                                                             sticky='nsew')
+                Label(summary, text="Hard", font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=5,
                                                                                                     sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
@@ -437,5 +434,6 @@ class DashBoard:
 
         user_frame[cur_user].pack(side='top', fill=BOTH, expand=True)
 
-
-DashBoard().create_frame()
+    # def go_to_login(self, none=None):
+    #     self.main_frame.destroy()
+    #     login_class.create_frame()
