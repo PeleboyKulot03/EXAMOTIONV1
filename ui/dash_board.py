@@ -34,6 +34,73 @@ def user_click(user):
     buttons_holder[cur_user].config(bg='#FEE440')
 
 
+def get_verdict(time, cnn, nlp):
+    if time < 10:
+        if cnn == "Neutral" and nlp == "Neutral" or cnn == "Excited" and nlp == "Excited":
+            return "Very Easy"
+        if cnn == "Bored" and nlp == "Bored":
+            return "Easy"
+        if cnn == "Nervous" and nlp == "Nervous":
+            return "Hard"
+        if cnn == "Frustrated" and nlp == "Frustrated":
+            return "Very Hard"
+        if cnn == "Surprised" and nlp == "Surprised":
+            return "Very Hard"
+        else:
+            return "Undetermined"
+
+    elif time < 60:
+        if cnn == "Neutral" and nlp == "Neutral":
+            return "Easy"
+        if cnn == "Excited" and nlp == "Excited":
+            return "Balanced"
+        if cnn == "Bored" and nlp == "Bored":
+            return "Hard"
+        if cnn == "Nervous" and nlp == "Nervous":
+            return "Balanced"
+        if cnn == "Frustrated" and nlp == "Frustrated":
+            return "Hard"
+        if cnn == "Surprised" and nlp == "Surprised":
+            return "Balanced"
+
+        else:
+            return "Undetermined"
+
+    elif time < 300:
+        if cnn == "Neutral" and nlp == "Neutral":
+            return "Balanced"
+        if cnn == "Excited" and nlp == "Excited":
+            return "Easy"
+        if cnn == "Bored" and nlp == "Bored":
+            return "Hard"
+        if cnn == "Nervous" and nlp == "Nervous":
+            return "Balanced"
+        if cnn == "Frustrated" and nlp == "Frustrated":
+            return "Very Hard"
+        if cnn == "Surprised" and nlp == "Surprised":
+            return "Balanced"
+
+        else:
+            return "Undetermined"
+
+    elif time >= 300:
+        if cnn == "Neutral" and nlp == "Neutral":
+            return "Balanced"
+        if cnn == "Excited" and nlp == "Excited":
+            return "Easy"
+        if cnn == "Bored" and nlp == "Bored":
+            return "Very Hard"
+        if cnn == "Nervous" and nlp == "Nervous":
+            return "Hard"
+        if cnn == "Frustrated" and nlp == "Frustrated":
+            return "Very Hard"
+        if cnn == "Surprised" and nlp == "Surprised":
+            return "Balanced"
+
+        else:
+            return "Undetermined"
+
+
 class DashBoard(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
@@ -329,7 +396,6 @@ class DashBoard(Frame):
                 if not emotion == "No Emotion":
                     data[emotion] = data[emotion] + 1
 
-
             # CNN results
             cnn_holder = Frame(right_frame, bg="#2B2D42", height=20)
             cnn_holder.grid(row=1, column=0, sticky="nsew", padx=(0, 20))
@@ -427,7 +493,7 @@ class DashBoard(Frame):
             Label(summary, text="Verdict", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=5,
                                                                                                    sticky='nsew')
 
-            for i in range(3):
+            for i in range(30):
                 Label(summary, text=i + 1, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=0,
                                                                                                    sticky='nsew')
                 Label(summary, text=item['answers'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(
@@ -442,8 +508,12 @@ class DashBoard(Frame):
                 Label(summary, text=item['nlps'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
                                                                                                              column=4,
                                                                                                              sticky='nsew')
-                Label(summary, text="Hard", font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=5,
-                                                                                                    sticky='nsew')
+
+                verdict = get_verdict(item['times'][i], item['cnns'][i], item['nlps'][i])
+
+                Label(summary, text=verdict, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
+                                                                                                     column=5,
+                                                                                                     sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)

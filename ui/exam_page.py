@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import numpy as np
-from statics import static
+from statics import static, test
 import threading
 from time import sleep
 import customtkinter
@@ -25,6 +25,7 @@ nlps = []
 answers = []
 emotions = []
 answers_holder = []
+pre_survey_answer = {}
 times = []
 score = 0
 cap = cv2.VideoCapture(0)
@@ -48,6 +49,7 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 def update_item_number():
     return f"{question_counter + 1}/{len(q_and_a_holder)}"
+
 
 # class Stopper:
 #     def __init__(self):
@@ -121,6 +123,8 @@ def show_answer():
 class ExamPage(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
+        self.scrollable_frame = None
+        self.pre_feelings = None
         self.timer_class = None
         self.camera_frame = None
         self.counter = None
@@ -138,11 +142,11 @@ class ExamPage(Frame):
 
     def create_frame(self):
         # center frame
-        scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="#2B2D42")
-        scrollable_frame.grid(row=0, column=0, sticky="nsew")
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="#2B2D42")
+        self.scrollable_frame.grid(row=0, column=0, sticky="nsew")
 
-        self.center_frame = Frame(scrollable_frame)
-        self.center_frame.pack(side='top', expand=True, padx=40, fill=BOTH)
+        self.center_frame = Frame(self.scrollable_frame)
+        self.center_frame.pack(side='top', expand=True, fill=BOTH, padx=40)
 
         # for the pre-survey
 
@@ -173,37 +177,296 @@ class ExamPage(Frame):
 
         self.name.pack(side='top', padx=40, pady=(0, 10), fill=X)
 
-        prompt_label_pre = customtkinter.CTkLabel(master=self.pre_survey,
-                                                  text=f"What do you feel answering question number {question_counter + 1}?",
-                                                  font=("Arial", 25),
-                                                  corner_radius=10,
-                                                  fg_color="#EDF2F4",
-                                                  justify=LEFT)
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="1. How confident are you in your prior knowledge of C++ problems?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="2. How confident are you in your current understanding of C++ problems?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="2. How confident are you in your current understanding of C++ problems?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="2. How confident are you in your current understanding of C++ problems?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="3. Rate your experience on coding or background on this topic of C++ problems",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="4. How expressive are you in showing a NEUTRAL emotion during examinations?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="5. How expressive are you in showing EXCITEMENT during examinations?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="6. How expressive are you in showing BOREDOM during examinations?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="7. How expressive are you in showing FRUSTRATION during examinations?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        # customtkinter.CTkLabel(master=self.pre_survey,
+        #                        text="8. How expressive are you in showing CONFUSION during examinations?",
+        #                        font=("Arial", 25),
+        #                        corner_radius=10,
+        #                        justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
+        #
+        # self.radio_var = IntVar(value=0)
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=1,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=2,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=3,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=4,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        # customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
+        #                              font=("Arial", 20),
+        #                              command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=5,
+        #                              fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
+        #
+        customtkinter.CTkLabel(master=self.pre_survey,
+                               text="1. How do you feel before taking an exam?",
+                               font=("Arial", 25),
+                               corner_radius=10,
+                               justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
 
-        prompt_label_pre.pack(side='top', anchor='w', padx=40, pady=20)
+        self.pre_feelings = customtkinter.CTkTextbox(master=self.pre_survey, font=("Arial", 20), corner_radius=10,
+                                                         height=300)
 
-        self.radio_var = IntVar(value=0)
-        radiobutton_1 = customtkinter.CTkRadioButton(self.pre_survey, text="CTkRadioButton 1",
-                                                     font=("Arial", 20),
-                                                     command=self.radiobutton_event, variable=self.radio_var, value=1,
-                                                     fg_color="#EDF2F4")
-        radiobutton_2 = customtkinter.CTkRadioButton(self.pre_survey, text="CTkRadioButton 2",
-                                                     font=("Arial", 20),
-                                                     command=self.radiobutton_event, variable=self.radio_var, value=2,
-                                                     fg_color="#EDF2F4")
-        radiobutton_3 = customtkinter.CTkRadioButton(self.pre_survey, text="CTkRadioButton 3",
-                                                     font=("Arial", 20),
-                                                     command=self.radiobutton_event, variable=self.radio_var, value=3,
-                                                     fg_color="#EDF2F4")
-        radiobutton_4 = customtkinter.CTkRadioButton(self.pre_survey, text="CTkRadioButton 4",
-                                                     font=("Arial", 20),
-                                                     command=self.radiobutton_event, variable=self.radio_var, value=4,
-                                                     fg_color="#EDF2F4")
-
-        radiobutton_1.pack(side='top', anchor='w', padx=40)
-        radiobutton_2.pack(side='top', anchor='w', padx=40)
-        radiobutton_3.pack(side='top', anchor='w', padx=40)
-        radiobutton_4.pack(side='top', anchor='w', padx=40, pady=(0, 40))
+        self.pre_feelings.pack(side='top', anchor='w', fill=X, padx=30, pady=(10, 30))
 
         self.pre_survey.pack(fill="both", expand=True, side='top')
 
@@ -292,8 +555,16 @@ class ExamPage(Frame):
 
         if is_first:
             if self.name.get() == "":
-                messagebox.showinfo("showinfo", "Sorry but pre-survey is a required field!")
+                messagebox.showinfo("showinfo", "Sorry but name is a required field!")
                 return
+
+            if self.pre_feelings.get("0.0", 'end-1c') == "":
+                messagebox.showinfo("showinfo", "Sorry but your feelings is a required field!")
+                return
+
+            for i in range(9):
+                print(i+1)
+
             final_name = self.name.get()
             self.pre_survey.destroy()
             q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
@@ -433,7 +704,7 @@ class ExamPage(Frame):
             database.add_data(data_model)
             self.controller.show_frame("ShowScore", score, total_time, data)
 
-    def radiobutton_event(self):
+    def radiobutton_event(self, counter, none=None):
         print("radiobutton toggled, current value:", self.radio_var.get())
 
     def show_post_survey(self):
@@ -473,14 +744,29 @@ class ExamPage(Frame):
         for item in questions:
             question_holder = customtkinter.CTkFrame(self.center_frame, fg_color="#8D99AE", corner_radius=10)
 
-            question_label = customtkinter.CTkLabel(question_holder,
-                                                    text=item.get("question"),
-                                                    font=("Helvetica", 25),
-                                                    justify='center',
-                                                    wraplength=600,
-                                                    fg_color="#EDF2F4",
-                                                    corner_radius=10,
-                                                    )
+            if len(q_and_a_holder) >= 20:
+                about_us_image = Image.open(item['question'])
+                about_us_image = about_us_image.resize((400, 200), Image.LANCZOS)
+                about_us_tk = ImageTk.PhotoImage(about_us_image)
+                question_label = customtkinter.CTkLabel(question_holder,
+                                                        text='',
+                                                        font=("Helvetica", 25),
+                                                        justify='center',
+                                                        wraplength=600,
+                                                        fg_color="#EDF2F4",
+                                                        corner_radius=10,
+                                                        image=about_us_tk
+                                                        )
+                question_label["border"] = "0"
+            else:
+                question_label = customtkinter.CTkLabel(question_holder,
+                                                        text=item['question'],
+                                                        font=("Helvetica", 25),
+                                                        justify='center',
+                                                        wraplength=600,
+                                                        fg_color="#EDF2F4",
+                                                        corner_radius=10,
+                                                        )
 
             answer_1 = customtkinter.CTkButton(master=question_holder,
                                                corner_radius=10,
@@ -579,7 +865,7 @@ class ExamPage(Frame):
                 if emotion == "sad":
                     emotion = "Bored"
                 elif emotion == "angry":
-                    emotion = "Frustration"
+                    emotion = "Frustrated"
                 elif emotion == "happy":
                     emotion = "Excited"
                 elif emotion == "disgust":
