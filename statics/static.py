@@ -264,9 +264,9 @@ class Statics:
         ]
 
         self.answer_key = ["B", "D", "B", "A", "C",
-                           # "C", "C", "B", "B", "D",
-                           # "B", "C", "B", "C", "C", "D", "C", "B", "D", "A",
-                           # "C", "C", "D", "A", "B", "D", "B", "D", "A", "B"
+                           "C", "C", "B", "B", "D",
+                           "B", "C", "B", "C", "C", "D", "C", "B", "D", "A",
+                           "C", "C", "D", "A", "B", "D", "B", "D", "A", "B"
                            ]
 
     def get_title(self):

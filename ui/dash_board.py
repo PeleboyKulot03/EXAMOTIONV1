@@ -376,7 +376,7 @@ class DashBoard(Frame):
             time_card_holder.pack(side='top', fill=BOTH, pady=10, expand=True)
             minutes = item['time'] // 60
             seconds = item['time'] % 60
-            if seconds < 60:
+            if item['time'] < 60:
                 minutes = 0
 
             time_text = f"{minutes:02}:{seconds:02}"
@@ -493,7 +493,7 @@ class DashBoard(Frame):
             Label(summary, text="Verdict", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=5,
                                                                                                    sticky='nsew')
 
-            for i in range(5):
+            for i in range(30):
                 Label(summary, text=i + 1, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=0,
                                                                                                    sticky='nsew')
                 Label(summary, text=item['answers'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(

@@ -67,7 +67,7 @@ class ShowScore(Frame):
 
         minutes = self.time // 60
         seconds = self.time % 60
-        if seconds < 60:
+        if self.time < 60:
             minutes = 0
 
         time_text = f"{minutes:02}:{seconds:02}"

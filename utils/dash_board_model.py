@@ -4,7 +4,6 @@ from pymongo.mongo_client import MongoClient
 from dotenv import load_dotenv
 import os
 from statics import static
-from tempfile import TemporaryFile
 
 stats = static.Statics()
 answer_key = stats.get_answer_key()
@@ -30,7 +29,7 @@ class DashBoardModel:
     def get_frequency(self):
         # self.admin = "admin"
         tabulations = {}
-        for count in range(5):
+        for count in range(30):
             result = self.collection.count_documents({'from': self.admin, f'answers.{count}': answer_key[count]})
             tabulations[count+1] = result
 
