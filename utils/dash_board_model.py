@@ -30,7 +30,7 @@ class DashBoardModel:
     def get_frequency(self):
         # self.admin = "admin"
         tabulations = {}
-        for count in range(30):
+        for count in range(5):
             result = self.collection.count_documents({'from': self.admin, f'answers.{count}': answer_key[count]})
             tabulations[count+1] = result
 

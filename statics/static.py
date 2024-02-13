@@ -187,7 +187,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 3
             },
             {
                 "question": "../resources/q_22.jpg",
@@ -195,7 +195,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 3
             },
             {
                 "question": "../resources/q_23.jpg",
@@ -203,7 +203,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 4
             },
             {
                 "question": "../resources/q_24.jpg",
@@ -219,7 +219,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 2
             },
             {
                 "question": "../resources/q_26.jpg",
@@ -227,7 +227,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 4
             },
             {
                 "question": "../resources/q_27.jpg",
@@ -235,7 +235,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 2
             },
             {
                 "question": "../resources/q_28.jpg",
@@ -243,7 +243,7 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 2
             },
             {
                 "question": "../resources/q_29.jpg",
@@ -259,13 +259,15 @@ class Statics:
                 2: "B. $var_name",
                 3: "C. 7VARNAME",
                 4: "D. 7var_name",
-                "correct": 1
+                "correct": 2
             },
         ]
 
-        self.answer_key = ["B", "D", "B", "A", "C", "C", "C", "B", "B", "D",
-                           "B", "C", "B", "C", "C", "D", "C", "B", "D", "A",
-                           "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"]
+        self.answer_key = ["B", "D", "B", "A", "C",
+                           # "C", "C", "B", "B", "D",
+                           # "B", "C", "B", "C", "C", "D", "C", "B", "D", "A",
+                           # "C", "C", "D", "A", "B", "D", "B", "D", "A", "B"
+                           ]
 
     def get_title(self):
         return self.title

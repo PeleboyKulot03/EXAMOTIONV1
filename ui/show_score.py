@@ -125,14 +125,14 @@ class ShowScore(Frame):
         button = Image.open("../resources/back_to_homepage.png")
         button = button.resize((400, 60), Image.LANCZOS)
         start_image_tk = ImageTk.PhotoImage(button)
-        start_image = Label(lower_portion, image=start_image_tk, cursor="hand2", pady=20)
+        start_image = Label(lower_portion, image=start_image_tk, cursor="hand2", pady=40)
         start_image["bg"] = "#2B2D42"
         start_image["border"] = "0"
         start_image.pack(side='top', anchor='n', expand=True)
         start_image.image = start_image_tk
         start_image.bind('<Button-1>', self.goto_landing_page)
 
-        right_frame.grid(row=0, column=1, sticky="nsew", pady=100)
+        right_frame.grid(row=0, column=1, sticky="nsew", pady=50)
         right_frame.columnconfigure(0, weight=1)
 
     def goto_landing_page(self, event=None):

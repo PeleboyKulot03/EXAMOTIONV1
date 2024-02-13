@@ -493,7 +493,7 @@ class DashBoard(Frame):
             Label(summary, text="Verdict", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=5,
                                                                                                    sticky='nsew')
 
-            for i in range(30):
+            for i in range(5):
                 Label(summary, text=i + 1, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=0,
                                                                                                    sticky='nsew')
                 Label(summary, text=item['answers'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(

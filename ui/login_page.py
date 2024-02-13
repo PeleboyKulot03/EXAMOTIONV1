@@ -100,11 +100,12 @@ class LoginPage(Frame):
 
         # login text
         login_image = Image.open("../resources/login_text.png")
+        login_image = login_image.resize((250, 100), Image.LANCZOS)
         login_tk = ImageTk.PhotoImage(login_image)
         login = Label(form, image=login_tk)
         login["bg"] = "#EDF2F4"
         login["border"] = "0"
-        login.pack(side='top', padx=(100, 0), pady=50)
+        login.pack(side='top', padx=(60, 0), pady=30)
         login.image = login_tk
 
         username_holder = Frame(form, bg='#EDF2F4')
