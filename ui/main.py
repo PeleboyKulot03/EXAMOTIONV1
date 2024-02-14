@@ -4,6 +4,7 @@ import window_setter as ws
 import os
 from PIL import Image, ImageTk
 
+
 class MainApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)

@@ -14,6 +14,7 @@ import pathlib
 from transformers import pipeline
 import random as rand
 
+
 classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion', return_all_scores=False)
 
 is_first = True

@@ -1,4 +1,3 @@
-import tempfile
 import pathlib
 from pymongo.mongo_client import MongoClient
 from dotenv import load_dotenv

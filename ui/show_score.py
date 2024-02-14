@@ -123,7 +123,7 @@ class ShowScore(Frame):
         chart_divider.pack(side='top', anchor='n', fill=X)
 
         button = Image.open("../resources/back_to_homepage.png")
-        button = button.resize((400, 60), Image.LANCZOS)
+        button = button.resize((300, 60), Image.LANCZOS)
         start_image_tk = ImageTk.PhotoImage(button)
         start_image = Label(lower_portion, image=start_image_tk, cursor="hand2", pady=40)
         start_image["bg"] = "#2B2D42"
