@@ -3,7 +3,7 @@ import random as rand
 
 classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion', return_all_scores=False)
 
-paragraph = "I am"
+paragraph = "I am soprised"
 prediction = classifier(paragraph, )
 
 pred = prediction[0]["label"]

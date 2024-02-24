@@ -14,7 +14,6 @@ banner_image = customtkinter.CTkImage(light_image=Image.open('../resources/sign_
 
 
 def validate(username, password, confirm_password, controller):
-
     if len(username.get()) == 0:
         messagebox.showinfo("Credentials Required", "Sorry but username is a required field!")
         return
@@ -31,7 +30,8 @@ def validate(username, password, confirm_password, controller):
         messagebox.showinfo("Credentials Required", "Password does not match!")
         return
 
-    verdict, message = sign_up_model.SignUpModel(username.get(), password_hasher.hash_password(password.get())).sign_up()
+    verdict, message = sign_up_model.SignUpModel(username.get(),
+                                                 password_hasher.hash_password(password.get())).sign_up()
     if verdict:
         controller.show_frame("LandingPage")
         return
@@ -65,6 +65,7 @@ class SignUp(Frame):
         about_us["border"] = "0"
         about_us.pack(side='right', padx=(20, 55), pady=10)
         about_us.image = about_us_tk
+        about_us.bind('<Button-1>', lambda e: controller.show_frame('AboutUs', data="SignUp"))
 
         # policy
         policy_image = Image.open("../resources/policy.png")
@@ -75,6 +76,7 @@ class SignUp(Frame):
         policy["border"] = "0"
         policy.pack(side='right', padx=20, pady=10)
         policy.image = policy_tk
+        policy.bind('<Button-1>', lambda e: controller.show_frame('Policy', data="SignUp"))
 
         # center frame
         center_frame = Frame(self, width=0, height=0, padx=100, pady=30)
@@ -122,11 +124,11 @@ class SignUp(Frame):
         username_card_holder.pack(side='left', fill=X, padx=(10, 0), expand=True)
 
         self.username = customtkinter.CTkEntry(username_card_holder,
-                                          placeholder_text="Username",
-                                          font=("Arial", 25),
-                                          border_width=0,
-                                          corner_radius=0,
-                                          height=55)
+                                               placeholder_text="Username",
+                                               font=("Arial", 25),
+                                               border_width=0,
+                                               corner_radius=0,
+                                               height=55)
 
         self.username.pack(side='left', padx=(5, 0), fill=X, expand=True)
         user_icon.image = username_icon_tk
@@ -173,7 +175,8 @@ class SignUp(Frame):
         confirm_password_icon.pack(side='left', padx=(0, 20))
         confirm_password_icon.image = password_icon_tk
 
-        confirm_password_card_holder = customtkinter.CTkFrame(confirm_password_holder, corner_radius=10, fg_color="#555580")
+        confirm_password_card_holder = customtkinter.CTkFrame(confirm_password_holder, corner_radius=10,
+                                                              fg_color="#555580")
         confirm_password_card_holder.pack(side='left', fill=X, padx=(10, 0), expand=True)
 
         self.confirm_password = customtkinter.CTkEntry(confirm_password_card_holder,

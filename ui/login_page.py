@@ -65,6 +65,7 @@ class LoginPage(Frame):
         about_us["border"] = "0"
         about_us.pack(side='right', padx=(20, 55), pady=10)
         about_us.image = about_us_tk
+        about_us.bind('<Button-1>', lambda e: controller.show_frame('AboutUs', data="LoginPage"))
 
         # policy
         policy_image = Image.open("../resources/policy.png")
@@ -75,7 +76,7 @@ class LoginPage(Frame):
         policy["border"] = "0"
         policy.pack(side='right', padx=20, pady=10)
         policy.image = policy_tk
-
+        policy.bind('<Button-1>', lambda e: controller.show_frame('Policy', data="LoginPage"))
         # center frame
         center_frame = Frame(self, width=0, height=0, padx=100, pady=50)
         center_frame.config(bg='#8D99AE')

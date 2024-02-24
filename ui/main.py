@@ -49,12 +49,17 @@ class MainApp(tk.Tk):
         import login_page
         import dash_board
         import sign_up_page
+        import about_us_page
+        import policy_page
+
         for F in (landing_page.LandingPage,
                   login_page.LoginPage,
                   dash_board.DashBoard,
                   sign_up_page.SignUp,
                   exam_page.ExamPage,
-                  show_score.ShowScore):
+                  show_score.ShowScore,
+                  about_us_page.AboutUs,
+                  policy_page.Policy):
             page_name = F.__name__
             frame = F(parent=self.container, controller=self, )
             self.frames[page_name] = frame
@@ -104,6 +109,10 @@ class MainApp(tk.Tk):
             self.frames[page_name].time = time
             self.frames[page_name].data = data
             self.frames[page_name].create_frame()
+
+        elif page_name == "AboutUs" or page_name == "Policy":
+            self.frames[page_name].grid(row=0, column=0, sticky="nsew")
+            self.frames[page_name].go_to = data
 
         self.frames[page_name].grid(row=0, column=0, sticky="nsew")
         frame = self.frames[page_name]

@@ -13,9 +13,11 @@ import os
 import pathlib
 from transformers import pipeline
 import random as rand
+from googletrans import Translator
 
 
 classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion', return_all_scores=False)
+translator = Translator()
 
 is_first = True
 on_post = False
@@ -23,10 +25,13 @@ question_counter = 0
 cur_answer = 5
 q_and_a_holder = []
 nlps = []
+post_surveys = []
+translations = []
 answers = []
 emotions = []
 answers_holder = []
 pre_survey_answer = {}
+static_answers = ['Not Confident at all', 'Slightly Confident', 'Moderately Confident', 'Very Confident', 'Extremely Confident']
 times = []
 score = 0
 cap = cv2.VideoCapture(0)
@@ -50,15 +55,6 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 def update_item_number():
     return f"{question_counter + 1}/{len(q_and_a_holder)}"
-
-
-# class Stopper:
-#     def __init__(self):
-#         self.thread = threading.Thread(target=set_enabled, args=())
-#
-#     def start_thread(self):
-#         next_button["state"] = "disabled"
-#         self.thread.start()
 
 
 class ShowAnsStopper:
@@ -119,6 +115,11 @@ def show_answer():
     answer = answers_holder[question_counter]
     answer[cur_answer - 1].configure(fg_color="#701313")
     answer[questions[question_counter].get("correct") - 1].configure(fg_color="#32a852")
+
+
+def radiobutton_event(counter, value, none=None):
+    pre_survey_answer[counter] = static_answers[value-1]
+    print(pre_survey_answer)
 
 
 class ExamPage(Frame):
@@ -188,23 +189,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(1, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(1, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(1, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(1, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(0), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(1, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -216,23 +217,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(2, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(2, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(2, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(2, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(1), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(2, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -244,23 +245,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(3, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(3, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(3, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(3, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(2), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(3, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -272,23 +273,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(4, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(4, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(4, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(4, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(3), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(4, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -300,23 +301,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(5, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(5, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(5, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(5, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(4), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(5, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -328,23 +329,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(6, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(6, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(6, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(6, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(5), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(6, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -356,23 +357,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(7, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(7, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(7, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(7, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(6), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(7, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -384,23 +385,23 @@ class ExamPage(Frame):
         self.radio_var = IntVar(value=0)
         customtkinter.CTkRadioButton(self.pre_survey, text="Not Confident at all",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=1,
+                                     command=lambda: radiobutton_event(8, 1), variable=self.radio_var, value=1,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Slightly Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=2,
+                                     command=lambda: radiobutton_event(8, 2), variable=self.radio_var, value=2,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Moderately Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=3,
+                                     command=lambda: radiobutton_event(8, 3), variable=self.radio_var, value=3,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Very Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=4,
+                                     command=lambda: radiobutton_event(8, 4), variable=self.radio_var, value=4,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
         customtkinter.CTkRadioButton(self.pre_survey, text="Extremely Confident",
                                      font=("Arial", 20),
-                                     command=lambda: self.radiobutton_event(7), variable=self.radio_var, value=5,
+                                     command=lambda: radiobutton_event(8, 5), variable=self.radio_var, value=5,
                                      fg_color="#EDF2F4").pack(side='top', anchor='w', padx=80, pady=(0, 40))
 
         customtkinter.CTkLabel(master=self.pre_survey,
@@ -514,9 +515,7 @@ class ExamPage(Frame):
                 messagebox.showinfo("showinfo", "Sorry but your feelings is a required field!")
                 return
 
-            for i in range(9):
-                print(i+1)
-
+            pre_survey_answer[9] = self.pre_feelings.get("0.0", 'end-1c')
             final_name = self.name.get()
             self.pre_survey.destroy()
             q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
@@ -535,8 +534,9 @@ class ExamPage(Frame):
 
             cur_answer = 5
 
-            paragraph = post_survey_answer
-            prediction = classifier(paragraph, )
+            translation = translator.translate(post_survey_answer, src='tl', dest='en')
+            text = translation.text
+            prediction = classifier(text, )
 
             pred = prediction[0]["label"]
             pred_score = prediction[0]["score"]
@@ -555,6 +555,8 @@ class ExamPage(Frame):
             if pred_score < 0.60:
                 pred = "No Emotion"
 
+            post_surveys.append(post_survey_answer)
+            translations.append(text)
             nlps.append(pred)
             self.post_survey.destroy()
             self.timer_class.start_timer()
@@ -590,8 +592,9 @@ class ExamPage(Frame):
                 temp_emotion = ["No Emotion"]
                 emotions.append(temp_emotion)
 
-            paragraph = post_survey_answer
-            prediction = classifier(paragraph, )
+            translation = translator.translate(post_survey_answer, src='tl', dest='en')
+            text = translation.text
+            prediction = classifier(text, )
 
             pred = prediction[0]["label"]
             pred_score = prediction[0]["score"]
@@ -609,7 +612,11 @@ class ExamPage(Frame):
 
             if pred_score < 0.60:
                 pred = "No Emotion"
+
+            post_surveys.append(post_survey_answer)
+            translations.append(text)
             nlps.append(pred)
+
             self.stopper = True
             self.is_destroy = True
             print(f"answers: {answers}")
@@ -650,14 +657,14 @@ class ExamPage(Frame):
                 'score': score,
                 'time': total_time,
                 'times': times,
-                'from': temp
+                'from': temp,
+                'post_surveys': post_surveys,
+                'translations': translations,
+                'pre_surveys': list(pre_survey_answer.values())
             }
 
             database.add_data(data_model)
             self.controller.show_frame("ShowScore", score, total_time, data)
-
-    def radiobutton_event(self, counter, none=None):
-        print("radiobutton toggled, current value:", self.radio_var.get())
 
     def show_post_survey(self):
         global on_post
@@ -894,6 +901,9 @@ class ExamPage(Frame):
         global starting_time
         global get_emotion
         global final_name
+        global post_surveys
+        global translations
+        global pre_survey_answer
 
         self.is_destroy = False
         self.stopper = False
@@ -905,6 +915,9 @@ class ExamPage(Frame):
         answers = []
         emotions = []
         times = []
+        post_surveys = []
+        translations = []
+        pre_survey_answer = {}
         score = 0
         cap = cv2.VideoCapture(0)
         seconds = 3600

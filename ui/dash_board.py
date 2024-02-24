@@ -276,19 +276,6 @@ class DashBoard(Frame):
         nlp_label = Label(nlp_holder, text="NLP", bg="#2B2D42", fg="white", font=("Arial", 25))
         nlp_label.pack(side='top')
 
-        # combined cnn and nlp
-        combine_holder = Frame(self.right_frame, bg="#2B2D42", height=20)
-        combine_holder.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
-
-        combine_card_holder = customtkinter.CTkFrame(combine_holder, fg_color="#DC2F02", corner_radius=10, height=20)
-        combine_card_holder.pack(side='top', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
-
-        combine = Label(combine_card_holder, bg="white", height=20)
-        combine.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
-
-        combine_nlp = Label(combine_holder, text="COMBINATION", bg="#2B2D42", fg="white", font=("Arial", 25))
-        combine_nlp.pack(side='top')
-
         self.right_frame.grid_columnconfigure(0, weight=1)
         self.right_frame.grid_columnconfigure(1, weight=1)
 
@@ -312,7 +299,7 @@ class DashBoard(Frame):
                                            fg_color="#2B2D42",
                                            font=("Arial", 25),
                                            command=lambda name=counter: user_click(name))
-
+            user._text_label.configure(wraplength=200)
             counter += 1
             buttons_holder.append(detailed_holder)
             buttons.append(user)
@@ -467,9 +454,46 @@ class DashBoard(Frame):
             nlp_label = Label(nlp_holder, text="NLP", bg="#2B2D42", fg="white", font=("Arial", 25))
             nlp_label.pack(side='top')
 
+            # pre survey
+            pre_survey_holder = Frame(right_frame, bg="#2B2D42", height=20)
+            pre_survey_holder.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
+
+            pre_survey_label = Label(pre_survey_holder, text="Pre-Survey", bg="#2B2D42", fg="white", font=("Arial", 25))
+            pre_survey_label.pack(side='top', pady=10)
+
+            pre_survey_card_holder = customtkinter.CTkFrame(pre_survey_holder, fg_color="#DC2F02", corner_radius=10,
+                                                            height=20)
+            pre_survey_card_holder.pack(side='top', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
+
+            pre_survey = Frame(pre_survey_card_holder, bg="white")
+            pre_survey.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
+
+            # headers
+            Label(pre_survey, text="Question No.", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
+                                                                                                           column=0,
+                                                                                                           sticky='nsew')
+            Label(pre_survey, text="Answer", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=1,
+                                                                                                     sticky='nsew')
+
+            for i in range(9):
+                Label(pre_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(row=i + 1,
+                                                                                                      column=0,
+                                                                                                      sticky='nsew')
+                Label(pre_survey, text=item['pre_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                    row=i + 1, column=1,
+                    sticky='nsew')
+
+            pre_survey.columnconfigure(0, weight=1)
+            pre_survey.columnconfigure(1, weight=1)
+            pre_survey.rowconfigure(0, weight=1)
+            pre_survey.rowconfigure(2, weight=1)
+
             # summary
             summary_holder = Frame(right_frame, bg="#2B2D42", height=20)
-            summary_holder.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
+            summary_holder.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
+
+            summary_label = Label(summary_holder, text="SUMMARY", bg="#2B2D42", fg="white", font=("Arial", 25))
+            summary_label.pack(side='top', pady=10)
 
             summary_card_holder = customtkinter.CTkFrame(summary_holder, fg_color="#DC2F02", corner_radius=10,
                                                          height=20)
@@ -521,8 +545,48 @@ class DashBoard(Frame):
             summary.columnconfigure(4, weight=1)
             summary.columnconfigure(5, weight=1)
 
-            summary_label = Label(summary_holder, text="SUMMARY", bg="#2B2D42", fg="white", font=("Arial", 25))
-            summary_label.pack(side='top')
+            # post survey
+            post_survey_holder = Frame(right_frame, bg="#2B2D42", height=20)
+            post_survey_holder.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
+
+            post_survey_label = Label(post_survey_holder, text="Post-Survey", bg="#2B2D42", fg="white",
+                                      font=("Arial", 25))
+            post_survey_label.pack(side='top', pady=10)
+
+            post_survey_card_holder = customtkinter.CTkFrame(post_survey_holder, fg_color="#DC2F02", corner_radius=10,
+                                                             height=20)
+            post_survey_card_holder.pack(side='top', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
+
+            post_survey = Frame(post_survey_card_holder, bg="white")
+            post_survey.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
+
+            # headers
+            Label(post_survey, text="Question No.", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
+                                                                                                            column=0,
+                                                                                                            sticky='nsew')
+            Label(post_survey, text="Answer", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=1,
+                                                                                                      sticky='nsew')
+            Label(post_survey, text="Translation", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
+                                                                                                           column=2,
+                                                                                                           sticky='nsew')
+
+            for i in range(30):
+                Label(post_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(row=i + 1,
+                                                                                                      column=0,
+                                                                                                      sticky='nsew')
+                Label(post_survey, text=item['post_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                    row=i + 1, column=1,
+                    sticky='nsew')
+                Label(post_survey, text=item['translations'][i], wraplength=300, font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                    row=i + 1, column=2,
+                    sticky='nsew')
+
+            post_survey.columnconfigure(0, weight=1)
+            post_survey.columnconfigure(1, weight=1)
+            post_survey.columnconfigure(2, weight=1)
+            post_survey.rowconfigure(0, weight=1)
+            post_survey.rowconfigure(1, weight=1)
+            post_survey.rowconfigure(2, weight=1)
 
             right_frame.grid_columnconfigure(0, weight=1)
             right_frame.grid_columnconfigure(1, weight=1)
