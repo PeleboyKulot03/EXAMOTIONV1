@@ -15,7 +15,6 @@ from transformers import pipeline
 import random as rand
 from googletrans import Translator
 
-
 classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion', return_all_scores=False)
 translator = Translator()
 
@@ -31,7 +30,8 @@ answers = []
 emotions = []
 answers_holder = []
 pre_survey_answer = {}
-static_answers = ['Not Confident at all', 'Slightly Confident', 'Moderately Confident', 'Very Confident', 'Extremely Confident']
+static_answers = ['Not Confident at all', 'Slightly Confident', 'Moderately Confident', 'Very Confident',
+                  'Extremely Confident']
 times = []
 score = 0
 cap = cv2.VideoCapture(0)
@@ -118,7 +118,7 @@ def show_answer():
 
 
 def radiobutton_event(counter, value, none=None):
-    pre_survey_answer[counter] = static_answers[value-1]
+    pre_survey_answer[counter] = static_answers[value - 1]
     print(pre_survey_answer)
 
 
@@ -154,17 +154,17 @@ class ExamPage(Frame):
         # for the pre-survey
 
         self.instructions = Label(master=self.center_frame,
-                             font=("Arial", 15),
-                             justify='left',
-                             anchor='w',
-                             bg="#2B2D42",
-                             fg="white",
-                             wraplength=800,
-                             text="Instructions:\n\nSimilarly, the emotions section can be rated on the same "
-                                  "scale, with 1 representing 'Not Expressive,' 2 representing 'Slightly "
-                                  "Expressive,' 3 representing 'Moderately Expressive,' 4 representing 'Very "
-                                  "Expressive,' and 5 representing 'Extremely Expressive.'"
-                             )
+                                  font=("Arial", 15),
+                                  justify='left',
+                                  anchor='w',
+                                  bg="#2B2D42",
+                                  fg="white",
+                                  wraplength=800,
+                                  text="Instructions:\n\nSimilarly, the emotions section can be rated on the same "
+                                       "scale, with 1 representing 'Not Expressive,' 2 representing 'Slightly "
+                                       "Expressive,' 3 representing 'Moderately Expressive,' 4 representing 'Very "
+                                       "Expressive,' and 5 representing 'Extremely Expressive.'"
+                                  )
         self.instructions.pack(side='top', fill=X, pady=20)
 
         self.pre_survey = customtkinter.CTkFrame(master=self.center_frame, fg_color="#8D99AE")
@@ -411,7 +411,7 @@ class ExamPage(Frame):
                                justify=LEFT).pack(side='top', anchor='w', padx=30, pady=(20, 30))
 
         self.pre_feelings = customtkinter.CTkTextbox(master=self.pre_survey, font=("Arial", 20), corner_radius=10,
-                                                         height=300)
+                                                     height=300)
 
         self.pre_feelings.pack(side='top', anchor='w', fill=X, padx=30, pady=(10, 30))
 
@@ -500,17 +500,23 @@ class ExamPage(Frame):
         global starting_time
         global final_name
         if question_counter == 0:
-            self.instructions.config(text="Please choose the letter of the correct answer and place it beside the respective number.\n\n I. Fill in the blanks.")
+            self.instructions.config(
+                text="Please choose the letter of the correct answer and place it beside the respective number.\n\n I. Fill in the blanks.")
         if question_counter == 9:
-            self.instructions.config(text="Please choose the letter of the correct answer and place it beside the respective number.\n\n II. Choose the letter of the correct answer.")
+            self.instructions.config(
+                text="Please choose the letter of the correct answer and place it beside the respective number.\n\n II. Choose the letter of the correct answer.")
         if question_counter == 19:
-            self.instructions.config(text="Please choose the letter of the correct answer and place it beside the respective number.\n\n III. Please choose the correct letter that represents the output of the given C++ code below.")
+            self.instructions.config(
+                text="Please choose the letter of the correct answer and place it beside the respective number.\n\n III. Please choose the correct letter that represents the output of the given C++ code below.")
 
         if is_first:
             if self.name.get() == "":
                 messagebox.showinfo("showinfo", "Sorry but name is a required field!")
                 return
-
+            for i in range(8):
+                if i + 1 not in pre_survey_answer.keys():
+                    messagebox.showinfo("showinfo", f"Sorry but question {i + 1} is a required field!")
+                    return
             if self.pre_feelings.get("0.0", 'end-1c') == "":
                 messagebox.showinfo("showinfo", "Sorry but your feelings is a required field!")
                 return

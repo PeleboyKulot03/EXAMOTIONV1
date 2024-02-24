@@ -104,7 +104,7 @@ class AboutUs(Frame):
             sticky='nsew', padx=20,
             pady=0)
 
-        diaz_image = Image.open("../resources/unknown.png")
+        diaz_image = Image.open("../resources/diaz.png")
         diaz_image = diaz_image.resize((500, 500), Image.LANCZOS)
         rosy_tk = ImageTk.PhotoImage(diaz_image)
         customtkinter.CTkLabel(center_frame, text='', corner_radius=10, image=rosy_tk, fg_color="#2B2D42").grid(
@@ -118,11 +118,7 @@ class AboutUs(Frame):
               text="Hello, I am Richard Julius Diaz!",
               font=('Helvetica', 32, 'bold')).grid(column=0, row=0, sticky='se', pady=(0, 10))
         Label(frame_holder, wraplength=600,
-              text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-                   " Ultrices tincidunt arcu non sodales neque sodales ut etiam sit. Diam phasellus vestibulum lorem sed."
-                   " Mattis vulputate enim nulla aliquet porttitor lacus luctus. Laoreet suspendisse interdum consectetur libero."
-                   " Mattis vulputate enim nulla aliquet porttitor lacus luctus accumsan. Semper viverra nam libero justo laoreet sit amet cursus."
-                   " Purus sit amet volutpat consequat mauris nunc congue nisi vitae. Sem fringilla ut morbi tincidunt augue.",
+              text="Richard Julius A. Diaz , A 22 years old fourth year student of bachelor of science in computer science at Eulogio Amang Rodriguez Institute of Science and Technology Manila, Currently residing in Mandaluyong city",
               font=('Times New Roman', 22),
               bg='#2B2D42', fg='white', justify=RIGHT).grid(column=0, row=1, sticky='ne')
         frame_holder.rowconfigure(0, weight=1)
