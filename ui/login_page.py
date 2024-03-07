@@ -202,3 +202,9 @@ class LoginPage(Frame):
         self.password_toggle.configure(image=hide_image)
         self.password.configure(show='')
         is_show = True
+
+    def reset(self):
+        self.password_toggle.configure(image=show_image)
+        self.password.configure(show='●')
+        is_show = False
+

@@ -89,6 +89,7 @@ class MainApp(tk.Tk):
             self.frames[page_name].username.configure(placeholder_text="Username")
             self.frames[page_name].password.configure(placeholder_text="Password")
             self.frames[page_name].confirm_password.configure(placeholder_text="Confirm Password")
+            self.frames[page_name].reset()
 
         elif page_name == "LoginPage":
             self.frames[page_name].grid(row=0, column=0, sticky="nsew")
@@ -96,6 +97,7 @@ class MainApp(tk.Tk):
             self.frames[page_name].password.delete(0, tk.END)
             self.frames[page_name].username.configure(placeholder_text="Username")
             self.frames[page_name].password.configure(placeholder_text="Password")
+            self.frames[page_name].reset()
 
         elif page_name == "ExamPage":
             self.frames[page_name].grid(row=0, column=0, sticky="nsew")

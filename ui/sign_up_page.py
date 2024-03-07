@@ -250,3 +250,15 @@ class SignUp(Frame):
         self.confirm_password_toggle.configure(image=hide_image)
         self.confirm_password.configure(show='')
         is_show_confirm = True
+
+    def reset(self):
+        global is_show_confirm
+        global is_show
+        self.confirm_password_toggle.configure(image=show_image)
+        self.confirm_password.configure(show='●')
+        is_show_confirm = False
+
+        self.password_toggle.configure(image=show_image)
+        self.password.configure(show='●')
+        is_show = False
+
