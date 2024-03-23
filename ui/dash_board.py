@@ -474,14 +474,26 @@ class DashBoard(Frame):
                                                                                                            sticky='nsew')
             Label(pre_survey, text="Answer", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=1,
                                                                                                      sticky='nsew')
+            Label(pre_survey, text="Translation", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
+                                                                                                          column=2,
+                                                                                                          sticky='nsew')
 
             for i in range(9):
-                Label(pre_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(row=i + 1,
-                                                                                                      column=0,
-                                                                                                      sticky='nsew')
-                Label(pre_survey, text=item['pre_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                Label(pre_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(
+                    row=i + 1,
+                    column=0,
+                    sticky='nsew')
+                Label(pre_survey, text=item['pre_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1,
+                      relief="solid").grid(
                     row=i + 1, column=1,
                     sticky='nsew')
+                Label(pre_survey, text=item['pre_survey_translation'][i], wraplength=300, font=("Arial", 18),
+                      borderwidth=1,
+                      relief="solid").grid(
+                    row=i + 1, column=2,
+                    sticky='nsew')
+
+
 
             pre_survey.columnconfigure(0, weight=1)
             pre_survey.columnconfigure(1, weight=1)
@@ -571,13 +583,16 @@ class DashBoard(Frame):
                                                                                                            sticky='nsew')
 
             for i in range(30):
-                Label(post_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(row=i + 1,
-                                                                                                      column=0,
-                                                                                                      sticky='nsew')
-                Label(post_survey, text=item['post_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                Label(post_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(
+                    row=i + 1,
+                    column=0,
+                    sticky='nsew')
+                Label(post_survey, text=item['post_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1,
+                      relief="solid").grid(
                     row=i + 1, column=1,
                     sticky='nsew')
-                Label(post_survey, text=item['translations'][i], wraplength=300, font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                Label(post_survey, text=item['translations'][i], wraplength=300, font=("Arial", 18), borderwidth=1,
+                      relief="solid").grid(
                     row=i + 1, column=2,
                     sticky='nsew')
 

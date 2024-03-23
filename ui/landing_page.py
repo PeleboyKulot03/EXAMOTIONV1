@@ -1,6 +1,6 @@
 from tkinter import *
 from PIL import ImageTk, Image
-
+import customtkinter as ctk
 
 class LandingPage(Frame):
     def __init__(self, parent, controller):
@@ -65,7 +65,6 @@ class LandingPage(Frame):
         policy.image = policy_tk
         policy.bind('<Button-1>', lambda e: controller.show_frame('Policy', data="LandingPage"))
 
-
         # center frame
         center_frame = Frame(self, width=0, height=0)
         center_frame.config(bg='#2B2D42')
@@ -102,6 +101,4 @@ class LandingPage(Frame):
         border_bottom.pack(side="bottom", anchor="sw")
         border_bottom.image = border_tk
 
-    # def go_to_login(self, event=None):
-    #     main_frame.destroy()
-    #     login_class.create_frame()
+

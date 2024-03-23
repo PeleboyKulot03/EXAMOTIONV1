@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import numpy as np
-from statics import static, test
+from statics import static
 import threading
 from time import sleep
 import customtkinter
@@ -651,6 +651,8 @@ class ExamPage(Frame):
             total_time = 3600 - seconds
 
             temp = ''
+            pre_survey_translation = translator.translate(pre_survey_answer[9], src='tl', dest='en').text
+            print(pre_survey_translation)
             for file in os.listdir(os.getcwd() + "\\myDir"):
                 temp = pathlib.Path(os.path.join(os.getcwd() + "\\myDir", file)).suffix
                 temp = temp.replace('.', '')
@@ -666,7 +668,8 @@ class ExamPage(Frame):
                 'from': temp,
                 'post_surveys': post_surveys,
                 'translations': translations,
-                'pre_surveys': list(pre_survey_answer.values())
+                'pre_surveys': list(pre_survey_answer.values()),
+                'pre_survey_translation': pre_survey_translation
             }
 
             database.add_data(data_model)
