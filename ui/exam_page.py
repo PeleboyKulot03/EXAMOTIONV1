@@ -20,7 +20,7 @@ translator = Translator()
 
 is_first = True
 on_post = False
-question_counter = 21
+question_counter = 0
 cur_answer = 5
 q_and_a_holder = []
 nlps = []
@@ -923,7 +923,7 @@ class ExamPage(Frame):
         self.stopper = False
         is_first = True
         on_post = False
-        question_counter = 21
+        question_counter = 0
         cur_answer = 5
         nlps = []
         answers = []
