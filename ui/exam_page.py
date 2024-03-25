@@ -20,7 +20,7 @@ translator = Translator()
 
 is_first = True
 on_post = False
-question_counter = 0
+question_counter = 21
 cur_answer = 5
 q_and_a_holder = []
 nlps = []
@@ -557,6 +557,8 @@ class ExamPage(Frame):
                 pred = 'Surprised'
             elif pred == 'fear':
                 pred = 'Nervous'
+            elif pred == 'love':
+                pred = 'Excited'
 
             if pred_score < 0.60:
                 pred = "No Emotion"
@@ -615,6 +617,8 @@ class ExamPage(Frame):
                 pred = 'Surprised'
             elif pred == 'fear':
                 pred = 'Nervous'
+            elif pred == 'love':
+                pred = 'Excited'
 
             if pred_score < 0.60:
                 pred = "No Emotion"
@@ -652,6 +656,7 @@ class ExamPage(Frame):
 
             temp = ''
             pre_survey_translation = translator.translate(pre_survey_answer[9], src='tl', dest='en').text
+            pre_survey_translations = ['-', '-', '-', '-', '-', '-', '-', '-', pre_survey_translation]
             print(pre_survey_translation)
             for file in os.listdir(os.getcwd() + "\\myDir"):
                 temp = pathlib.Path(os.path.join(os.getcwd() + "\\myDir", file)).suffix
@@ -669,7 +674,7 @@ class ExamPage(Frame):
                 'post_surveys': post_surveys,
                 'translations': translations,
                 'pre_surveys': list(pre_survey_answer.values()),
-                'pre_survey_translation': pre_survey_translation
+                'pre_survey_translation': pre_survey_translations
             }
 
             database.add_data(data_model)
@@ -918,7 +923,7 @@ class ExamPage(Frame):
         self.stopper = False
         is_first = True
         on_post = False
-        question_counter = 0
+        question_counter = 21
         cur_answer = 5
         nlps = []
         answers = []

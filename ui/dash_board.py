@@ -291,6 +291,7 @@ class DashBoard(Frame):
         buttons.clear()
         buttons_holder.clear()
         for item in self.users:
+            print(item)
             detailed_holder = Frame(self.scrollable_users, bg="#FE3F56")
             detailed_holder.pack(side='top', fill=X, pady=(0, 20))
             user = customtkinter.CTkButton(detailed_holder,

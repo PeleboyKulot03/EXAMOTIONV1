@@ -30,7 +30,7 @@ class MainApp(tk.Tk):
         logo["bg"] = "#2B2D42"
         logo.config(image=image)
         logo.image = image
-        logo.pack(side='top', anchor='n', fill='x', pady=(100, 10))
+        logo.pack(side='top', anchor='n', fill='x', pady=(30, 0))
 
         path = Image.open("../resources/heading.png")
         image = ImageTk.PhotoImage(path)
