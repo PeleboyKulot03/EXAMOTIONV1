@@ -12,11 +12,11 @@ emotions = ['Neutral', 'Excited', 'Bored', 'Nervous', 'Frustrated', 'Surprised']
 
 class DashBoardModel:
     def __init__(self):
-
         cluster = os.getenv("CLUSTER")
         uri = cluster
         client = MongoClient(uri)
         self.collection = client['examotion']['students']
+        self.lp_collection = client['examotion']['credentials']
         # Go back to the beginning and read data from file
         temp = ''
         for file in os.listdir(os.getcwd() + "\\myDir"):
@@ -55,3 +55,13 @@ class DashBoardModel:
     def get_users(self):
         result = list(self.collection.find({'from': self.admin}))
         return result
+
+    def validate_admin(self, password):
+        user = self.lp_collection.find_one({"username": self.admin})
+        if user['username'] == self.admin and user['password'] == password:
+            print("hey")
+            return True
+        else:
+            print("sad")
+            return False
+

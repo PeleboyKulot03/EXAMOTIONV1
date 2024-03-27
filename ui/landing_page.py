@@ -1,6 +1,33 @@
 from tkinter import *
 from PIL import ImageTk, Image
 import customtkinter as ctk
+from tkinter import messagebox
+from utils import dash_board_model
+from statics import static, password_hasher, globals
+
+model = dash_board_model.DashBoardModel()
+global_var = globals.Globals()
+statics = static.Statics()
+
+
+def button_click_event(controller):
+    dialog = ctk.CTkInputDialog(text="Type your admin password:", title="Warning for admin only!")
+
+    password = dialog.get_input()
+    if len(password) == 0:
+        messagebox.showinfo("Credentials Required", "Sorry but username is a required field!")
+        return
+
+    if len(password) < 8:
+        messagebox.showinfo("Invalid Credentials", "Please input valid password with length of minimum of 8")
+        return
+
+    if model.validate_admin(password_hasher.hash_password(password)):
+        controller.show_frame('DashBoard')
+        return
+
+    messagebox.showinfo("Incorrect Password", "Sorry but the provided password is incorrect.")
+
 
 class LandingPage(Frame):
     def __init__(self, parent, controller):
@@ -41,7 +68,7 @@ class LandingPage(Frame):
         login["border"] = "0"
         login.pack(side='right', padx=20, pady=10)
         login.image = login_tk
-        login.bind('<Button-1>', lambda e: controller.show_frame('DashBoard'))
+        login.bind('<Button-1>', lambda e: button_click_event(controller))
 
         # about us
         about_us_image = Image.open("../resources/about_us.png")
@@ -100,5 +127,3 @@ class LandingPage(Frame):
         border_bottom["border"] = "0"
         border_bottom.pack(side="bottom", anchor="sw")
         border_bottom.image = border_tk
-
-
