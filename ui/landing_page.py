@@ -5,17 +5,18 @@ from tkinter import messagebox
 from utils import dash_board_model
 from statics import static, password_hasher, globals
 
-model = dash_board_model.DashBoardModel()
 global_var = globals.Globals()
 statics = static.Statics()
+show_image = ctk.CTkImage(light_image=Image.open('../resources/show.png'), size=(40, 40))
+hide_image = ctk.CTkImage(light_image=Image.open('../resources/hidden.png'), size=(40, 40))
+is_show = False
+ctrl = None
 
 
-def button_click_event(controller):
-    dialog = ctk.CTkInputDialog(text="Type your admin password:", title="Warning for admin only!")
-
-    password = dialog.get_input()
+def button_click_event(self, controller, password):
+    model = dash_board_model.DashBoardModel()
     if len(password) == 0:
-        messagebox.showinfo("Credentials Required", "Sorry but username is a required field!")
+        messagebox.showinfo("Credentials Required", "Sorry but password is a required field!")
         return
 
     if len(password) < 8:
@@ -24,15 +25,98 @@ def button_click_event(controller):
 
     if model.validate_admin(password_hasher.hash_password(password)):
         controller.show_frame('DashBoard')
+        self.destroy()
         return
 
     messagebox.showinfo("Incorrect Password", "Sorry but the provided password is incorrect.")
 
 
+class ToplevelWindow(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("500x300")
+        self.configure(fg_color="#EDF2F4")
+
+        self.login_image = Image.open("../resources/for_admin.png")
+        self.login_image = self.login_image.resize((320, 80), Image.LANCZOS)
+        login_tk = ImageTk.PhotoImage(self.login_image)
+        self.login = Label(self, image=login_tk)
+        self.login["bg"] = "#EDF2F4"
+        self.login["border"] = "0"
+        self.login.pack(side='top', padx=40, pady=10)
+        self.login.image = login_tk
+
+        password_holder = Frame(self, bg='#EDF2F4')
+        password_holder.pack(side='top', anchor='w', fill=X, padx=40)
+
+        password_card_holder = ctk.CTkFrame(password_holder, corner_radius=10, fg_color="#555580")
+        password_card_holder.pack(side='left', fill=X, expand=True)
+
+        self.password = ctk.CTkEntry(password_card_holder,
+                                     placeholder_text="Password",
+                                     font=("Arial", 25),
+                                     border_width=0,
+                                     corner_radius=0,
+                                     height=45)
+        self.password.configure(show='●')
+        self.password.pack(side='left', padx=(5, 0), fill=X, expand=True)
+
+        self.password_toggle = ctk.CTkButton(password_card_holder, width=10, text="",
+                                             corner_radius=0,
+                                             hover=False,
+                                             border_width=0,
+                                             image=show_image,
+                                             cursor="hand2",
+                                             fg_color="#F8F9FA",
+                                             command=lambda: self.toggle())
+        self.password_toggle["border"] = "0"
+        self.password_toggle.pack(side='left', fill=Y)
+        self.password_toggle.image = is_show
+
+        self.login_holder = ctk.CTkFrame(self, corner_radius=10, fg_color="#FAA307")
+        self.login_holder.pack(side='top', padx=(40, 40), pady=(20, 10), fill=X)
+        self.login = ctk.CTkButton(self.login_holder,
+                                   text="LOGIN",
+                                   font=("Helvetica", 25, "bold"),
+                                   height=45,
+                                   fg_color="white",
+                                   hover_color="#c4c4c4",
+                                   command=lambda: button_click_event(self, ctrl, self.password.get()),
+                                   text_color="#000000")
+        self.login.pack(side='top', padx=5, fill=X)
+
+        self.back_to_homepage_holder = ctk.CTkFrame(self, corner_radius=10, fg_color="#FE3F56")
+        self.back_to_homepage_holder.pack(side='top', padx=(40, 40), fill=X)
+        self.back_to_homepage = ctk.CTkButton(self.back_to_homepage_holder,
+                                              text="CANCEL",
+                                              font=("Helvetica 18 bold", 25, "bold"),
+                                              height=45,
+                                              fg_color="white",
+                                              hover_color="#c4c4c4",
+                                              command=lambda: self.destroy(),
+                                              text_color="#000000")
+
+        self.back_to_homepage.pack(side='top', padx=5, fill=X)
+
+    def toggle(self):
+        global is_show
+        if is_show:
+            self.password_toggle.configure(image=show_image)
+            self.password.configure(show='●')
+            is_show = False
+            return
+
+        self.password_toggle.configure(image=hide_image)
+        self.password.configure(show='')
+        is_show = True
+
+
 class LandingPage(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        self.controller = controller
+
+        global ctrl
+        ctrl = controller
         # toolbar
         tool_bar = Frame(self, width=0, height=200)
         tool_bar.config(bg="#EDF2F4")
@@ -68,7 +152,7 @@ class LandingPage(Frame):
         login["border"] = "0"
         login.pack(side='right', padx=20, pady=10)
         login.image = login_tk
-        login.bind('<Button-1>', lambda e: button_click_event(controller))
+        login.bind('<Button-1>', lambda e: self.open_toplevel())
 
         # about us
         about_us_image = Image.open("../resources/about_us.png")
@@ -127,3 +211,10 @@ class LandingPage(Frame):
         border_bottom["border"] = "0"
         border_bottom.pack(side="bottom", anchor="sw")
         border_bottom.image = border_tk
+        self.toplevel_window = None
+
+    def open_toplevel(self):
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = ToplevelWindow(self)
+
+        self.toplevel_window.focus()  # if window exists focus it
