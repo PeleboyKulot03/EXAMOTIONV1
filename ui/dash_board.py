@@ -525,9 +525,7 @@ class DashBoard(Frame):
                                                                                                 sticky='nsew')
             Label(summary, text="CNN", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=3,
                                                                                                sticky='nsew')
-            Label(summary, text="NLP", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=4,
-                                                                                               sticky='nsew')
-            Label(summary, text="Verdict", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=5,
+            Label(summary, text="Remarks", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=4,
                                                                                                    sticky='nsew')
 
             for i in range(30):
@@ -539,24 +537,20 @@ class DashBoard(Frame):
                 Label(summary, text=item['times'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
                                                                                                               column=2,
                                                                                                               sticky='nsew')
-                Label(summary, text=item['cnns'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
-                                                                                                             column=3,
-                                                                                                             sticky='nsew')
-                Label(summary, text=item['nlps'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
-                                                                                                             column=4,
-                                                                                                             sticky='nsew')
+                # Label(summary, text=item['cnns'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
+                #                                                                                              column=3,
+                #                                                                                              sticky='nsew')
 
-                verdict = get_verdict(item['times'][i], item['cnns'][i], item['nlps'][i])
-
-                Label(summary, text=verdict, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
-                                                                                                     column=5,
-                                                                                                     sticky='nsew')
+                # verdict = get_verdict(item['times'][i], item['cnns'][i], item['nlps'][i])
+                #
+                # Label(summary, text=verdict, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
+                #                                                                                      column=4,
+                #                                                                                      sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)
             summary.columnconfigure(3, weight=1)
             summary.columnconfigure(4, weight=1)
-            summary.columnconfigure(5, weight=1)
 
             # post survey
             post_survey_holder = Frame(right_frame, bg="#2B2D42", height=20)
@@ -574,28 +568,28 @@ class DashBoard(Frame):
             post_survey.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
 
             # headers
-            Label(post_survey, text="Question No.", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
-                                                                                                            column=0,
-                                                                                                            sticky='nsew')
-            Label(post_survey, text="Answer", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=1,
+            Label(post_survey, text="Answer", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=0,
                                                                                                       sticky='nsew')
             Label(post_survey, text="Translation", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
+                                                                                                           column=1,
+                                                                                                           sticky='nsew')
+            Label(post_survey, text="Emotion", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
                                                                                                            column=2,
                                                                                                            sticky='nsew')
 
-            for i in range(30):
-                Label(post_survey, text=i + 1, font=("Arial", 18), wraplength=300, borderwidth=1, relief="solid").grid(
-                    row=i + 1,
-                    column=0,
-                    sticky='nsew')
-                Label(post_survey, text=item['post_surveys'][i], wraplength=300, font=("Arial", 18), borderwidth=1,
-                      relief="solid").grid(
-                    row=i + 1, column=1,
-                    sticky='nsew')
-                Label(post_survey, text=item['translations'][i], wraplength=300, font=("Arial", 18), borderwidth=1,
-                      relief="solid").grid(
-                    row=i + 1, column=2,
-                    sticky='nsew')
+            # answers
+            Label(post_survey, text=item['post_surveys'][0], wraplength=300, font=("Arial", 18), borderwidth=1,
+                  relief="solid").grid(
+                row=1, column=0,
+                sticky='nsew')
+            Label(post_survey, text=item['translations'][0], wraplength=300, font=("Arial", 18), borderwidth=1,
+                  relief="solid").grid(
+                row=1, column=1,
+                sticky='nsew')
+            Label(post_survey, text=item['nlps'][0], wraplength=300, font=("Arial", 18), borderwidth=1,
+                  relief="solid").grid(
+                row=1, column=2,
+                sticky='nsew')
 
             post_survey.columnconfigure(0, weight=1)
             post_survey.columnconfigure(1, weight=1)
@@ -611,7 +605,3 @@ class DashBoard(Frame):
 
         if len(user_frame) > 0:
             user_frame[cur_user].pack(side='top', fill=BOTH, expand=True)
-
-    # def go_to_login(self, none=None):
-    #     self.main_frame.destroy()
-    #     login_class.create_frame()

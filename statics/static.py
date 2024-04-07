@@ -13,7 +13,7 @@ class Statics:
         self.policy = "Policy"
         self.questions = [
             {
-                "question": "1. In C++, a ___ is a named location in memory that holds a value.",
+                "question": ". In C++, a ___ is a named location in memory that holds a value.",
                 1: "A. Variable",
                 2: "B. Function",
                 3: "C. Array ",
@@ -21,7 +21,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "2. The ____ object is used to display output to the console, and cin is used to receive input from the user.",
+                "question": ". The ____ object is used to display output to the console, and cin is used to receive input from the user.",
                 1: "A. file",
                 2: "B. data type",
                 3: "C. function",
@@ -29,7 +29,7 @@ class Statics:
                 "correct": 4
             },
             {
-                "question": "3. The _______ of a variable determines the kind of values it can hold and the operations that can be performed on it.",
+                "question": ". The _______ of a variable determines the kind of values it can hold and the operations that can be performed on it.",
                 1: "A. Scope",
                 2: "B. Data type ",
                 3: "C. Declaration",
@@ -37,7 +37,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "4. The __ statement is used for conditional execution of code based on a specified condition.",
+                "question": ". The __ statement is used for conditional execution of code based on a specified condition.",
                 1: "A. if",
                 2: "B. switch",
                 3: "C. loop",
@@ -45,7 +45,7 @@ class Statics:
                 "correct": 1
             },
             {
-                "question": "5. The _ loop is used to execute a block of code repeatedly for a specified number of times.",
+                "question": ". The _ loop is used to execute a block of code repeatedly for a specified number of times.",
                 1: "A. while",
                 2: "B. do-while",
                 3: "C. for",
@@ -53,7 +53,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "6. The ___ statement allows you to choose between several "
+                "question": ". The ___ statement allows you to choose between several "
                             "\nalternatives based on the value of a variable.",
                 1: "A. if",
                 2: "B. for",
@@ -62,7 +62,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "7.	In C++, ______ is not a fundamental data type.",
+                "question": ".	In C++, ______ is not a fundamental data type.",
                 1: "A. int",
                 2: "B. float",
                 3: "C. string",
@@ -70,7 +70,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "8.	When did the development of the C++ programming language commence____________?",
+                "question": ".	When did the development of the C++ programming language commence____________?",
                 1: "A. 1975",
                 2: "B. 1979",
                 3: "C. 1983",
@@ -78,7 +78,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "9. In C++, the correct way to include the"
+                "question": ". In C++, the correct way to include the"
                             "\n input-output stream header file is _____.",
                 1: "A. #include <stdio.h>",
                 2: "B. #include <iostream>",
@@ -87,7 +87,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "10. In C++, to declare a pointer, you use the syntax _____.",
+                "question": ". In C++, to declare a pointer, you use the syntax _____.",
                 1: "A. pointer myPointer;",
                 2: "B. ptr myPointer;",
                 3: "C. #define myPointer*",
@@ -95,7 +95,7 @@ class Statics:
                 "correct": 4
             },
             {
-                "question": "11. In C++, what is the difference between function overloading and function overriding? ",
+                "question": ". In C++, what is the difference between function overloading and function overriding? ",
                 1: "A. Overriding allows multiple functions with"
                    " the same name in the same scope, "
                    "while overloading is for derived classes "
@@ -109,7 +109,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "12. In C++, what does the int main() function represent?",
+                "question": ". In C++, what does the int main() function represent?",
                 1: "A. A loop for iterating over a sequence",
                 2: "B. A function for mathematical calculations",
                 3: "C. The entry point of a C++ program",
@@ -117,7 +117,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "13. Which of the following is the correct way to declare a variable in C++?",
+                "question": ". Which of the following is the correct way to declare a variable in C++?",
                 1: "A. variable x;",
                 2: "B. int x;",
                 3: "C. x = int;",
@@ -125,7 +125,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "14. What is the purpose of the cin object in C++?",
+                "question": ". What is the purpose of the cin object in C++?",
                 1: "A. To output data to the console",
                 2: "B. To handle file input",
                 3: "C. To read input from the user",
@@ -133,7 +133,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "15. Which of the following is the correct syntax for a for loop in C++?",
+                "question": ". Which of the following is the correct syntax for a for loop in C++?",
                 1: "A. for i = 0; i < 10; i++",
                 2: "B. loop (i = 0; i < 10; i++)",
                 3: "C. for (int i = 0; i < 10; i++)",
@@ -141,7 +141,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "16. What does the nullptr keyword represent in C++?",
+                "question": ". What does the nullptr keyword represent in C++?",
                 1: "A. A keyword used to define a null variable",
                 2: "B. An alias for the ‘NULL’ keyword in C",
                 3: "C. A constant representing zero",
@@ -149,7 +149,7 @@ class Statics:
                 "correct": 4
             },
             {
-                "question": "17. What is C++?",
+                "question": ". What is C++?",
                 1: "A. C++ is an object oriented programming language",
                 2: "B. C++ is a procedural programming language",
                 3: "C. C++ supports both procedural and object oriented programming language",
@@ -157,7 +157,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "18. Which of the following is the "
+                "question": ". Which of the following is the "
                             "\ncorrect syntax of including a user defined header files in C++?",
                 1: "A. #include [userdefined]",
                 2: "B. #include “userdefined”",
@@ -166,7 +166,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "19. Who invented C++?",
+                "question": ". Who invented C++?",
                 1: "A. Dennis Ritchie",
                 2: "B. Ken Thompson",
                 3: "C. Brian Kernighan",
@@ -174,7 +174,7 @@ class Statics:
                 "correct": 4
             },
             {
-                "question": "20. Which of the following is used for comments in C++? ",
+                "question": ". Which of the following is used for comments in C++? ",
                 1: "A. VAR_1234",
                 2: "B. $var_name",
                 3: "C. 7VARNAME",

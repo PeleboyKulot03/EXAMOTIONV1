@@ -14,6 +14,7 @@ import pathlib
 from transformers import pipeline
 import random as rand
 from googletrans import Translator
+import random
 
 classifier = pipeline("text-classification", model='bhadresh-savani/bert-base-uncased-emotion', return_all_scores=False)
 translator = Translator()
@@ -26,7 +27,11 @@ q_and_a_holder = []
 nlps = []
 post_surveys = []
 translations = []
-answers = []
+shuffled_question_index = []
+answers = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+           5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+           5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
 emotions = []
 answers_holder = []
 pre_survey_answer = {}
@@ -108,13 +113,13 @@ def on_click(pos):
 
 def show_answer():
     global score
-    correct_ans = questions[question_counter].get("correct") - 1
+    correct_ans = questions[shuffled_question_index[question_counter]].get("correct") - 1
     if correct_ans == cur_answer - 1:
         score += 1
 
     answer = answers_holder[question_counter]
     answer[cur_answer - 1].configure(fg_color="#701313")
-    answer[questions[question_counter].get("correct") - 1].configure(fg_color="#32a852")
+    answer[questions[shuffled_question_index[question_counter]].get("correct") - 1].configure(fg_color="#32a852")
 
 
 def radiobutton_event(counter, value, none=None):
@@ -489,8 +494,20 @@ class ExamPage(Frame):
         self.camera_thread = threading.Thread(target=self.show_frame, args=())
         self.camera_thread.start()
 
+    def show_next_question(self):
+        global question_counter
+        global starting_time
+        global on_post
+        sleep(1)
+
+        self.next_button["state"] = "normal"
+        q_and_a_holder[question_counter].destroy()
+        question_counter += 1
+        q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
+        self.counter.config(text=update_item_number())
+        starting_time = seconds
+
     def goto_next(self):
-        show_answer_stopper = ShowAnsStopper(self.next_button, self.show_post_survey)
         global is_first
         global on_post
         global question_counter
@@ -499,6 +516,8 @@ class ExamPage(Frame):
         global times
         global starting_time
         global final_name
+
+        show_answer_stopper = ShowAnsStopper(self.next_button, self.show_post_survey if question_counter >= 29 else self.show_next_question)
         if question_counter == 0:
             self.instructions.config(
                 text="Please choose the letter of the correct answer and place it beside the respective number.\n\n I. Fill in the blanks.")
@@ -528,68 +547,70 @@ class ExamPage(Frame):
             self.next_button.config(text="Next")
             is_first = False
             self.timer_class.start_timer()
-            on_post = True
+            on_post = False
             threading.Thread(target=self.open_get_emotion, args=()).start()
 
-        elif question_counter < len(q_and_a_holder) - 1 and not on_post:
-            post_survey_answer = self.what_do_you_feel.get("0.0", 'end-1c')
+        # elif question_counter < len(q_and_a_holder) - 1 and on_post:
+        #     post_survey_answer = self.what_do_you_feel.get("0.0", 'end-1c')
+        #
+        #     if len(post_survey_answer) == 0:
+        #         messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
+        #         return
+        #
+        #     cur_answer = 5
+        #
+        #     translation = translator.translate(post_survey_answer, src='tl', dest='en')
+        #     text = translation.text
+        #     prediction = classifier(text, )
+        #
+        #     pred = prediction[0]["label"]
+        #     pred_score = prediction[0]["score"]
+        #
+        #     if pred == 'joy':
+        #         pred = 'Excited'
+        #     if pred == 'sadness':
+        #         pred = sad[rand.randint(0, 1)]
+        #     elif pred == 'anger':
+        #         pred = 'Frustrated'
+        #     elif pred == 'surprise':
+        #         pred = 'Surprised'
+        #     elif pred == 'fear':
+        #         pred = 'Nervous'
+        #     elif pred == 'love':
+        #         pred = 'Excited'
+        #
+        #     if pred_score < 0.60:
+        #         pred = "No Emotion"
+        #
+        #     post_surveys.append(post_survey_answer)
+        #     translations.append(text)
+        #     nlps.append(pred)
+        #     self.post_survey.destroy()
+        #     self.timer_class.start_timer()
+        #     q_and_a_holder[question_counter].destroy()
+        #     if question_counter + 1 > len(emotions):
+        #         temp_emotion = ["No Emotion"]
+        #         emotions.append(temp_emotion)
+        #
+        #     question_counter = question_counter + 1
+        #     q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
+        #     self.counter.config(text=update_item_number())
+        #     on_post = True
+        #     starting_time = seconds
 
-            if len(post_survey_answer) == 0:
-                messagebox.showinfo("showinfo", "Sorry but Post-Survey Feedback is a required field!")
-                return
-
-            cur_answer = 5
-
-            translation = translator.translate(post_survey_answer, src='tl', dest='en')
-            text = translation.text
-            prediction = classifier(text, )
-
-            pred = prediction[0]["label"]
-            pred_score = prediction[0]["score"]
-
-            if pred == 'joy':
-                pred = 'Excited'
-            if pred == 'sadness':
-                pred = sad[rand.randint(0, 1)]
-            elif pred == 'anger':
-                pred = 'Frustrated'
-            elif pred == 'surprise':
-                pred = 'Surprised'
-            elif pred == 'fear':
-                pred = 'Nervous'
-            elif pred == 'love':
-                pred = 'Excited'
-
-            if pred_score < 0.60:
-                pred = "No Emotion"
-
-            post_surveys.append(post_survey_answer)
-            translations.append(text)
-            nlps.append(pred)
-            self.post_survey.destroy()
-            self.timer_class.start_timer()
-            q_and_a_holder[question_counter].destroy()
-            if question_counter + 1 > len(emotions):
-                temp_emotion = ["No Emotion"]
-                emotions.append(temp_emotion)
-
-            question_counter = question_counter + 1
-            q_and_a_holder[question_counter].pack(fill="both", expand=True, pady=10)
-            self.counter.config(text=update_item_number())
-            on_post = True
-            starting_time = seconds
-
-        elif question_counter < len(q_and_a_holder) and on_post:
+        elif question_counter < len(q_and_a_holder) and not on_post:
             # post survey
             if cur_answer == 5:
                 messagebox.showinfo("showinfo", "Sorry but you haven't choose an answer yet!")
                 return
 
-            on_post = False
+            # on_post = True
             show_answer()
-            answers.append(key[cur_answer - 1])
+            answers[shuffled_question_index[question_counter]] = key[cur_answer - 1]
             show_answer_stopper.start_thread()
             times.append(starting_time - seconds)
+            if question_counter == 29:
+                on_post = True
 
         else:
             post_survey_answer = self.what_do_you_feel.get("0.0", 'end-1c')
@@ -711,13 +732,29 @@ class ExamPage(Frame):
 
     def get_questions(self):
         global q_and_a_holder
+        global shuffled_question_index
         q_and_a_holder.clear()
         answers_holder.clear()
 
-        for item in questions:
-            question_holder = customtkinter.CTkFrame(self.center_frame, fg_color="#8D99AE", corner_radius=10)
+        # shuffle the array while putting the index of the item in the new array
+        i = 0
+        while i < 30:
+            has_val = False
+            rand_num = random.randint(0, 29)
+            for index in shuffled_question_index:
+                if rand_num == index:
+                    has_val = True
+                    break
 
-            if len(q_and_a_holder) >= 20:
+            if has_val:
+                continue
+            i += 1
+            shuffled_question_index.append(rand_num)
+
+        for i in range(30):
+            item = questions[shuffled_question_index[i]]
+            question_holder = customtkinter.CTkFrame(self.center_frame, fg_color="#8D99AE", corner_radius=10)
+            if shuffled_question_index[i] >= 20:
                 about_us_image = Image.open(item['question'])
                 about_us_image = about_us_image.resize((400, 200), Image.LANCZOS)
                 about_us_tk = ImageTk.PhotoImage(about_us_image)
@@ -732,8 +769,9 @@ class ExamPage(Frame):
                                                         )
                 question_label["border"] = "0"
             else:
+                question = item['question']
                 question_label = customtkinter.CTkLabel(question_holder,
-                                                        text=item['question'],
+                                                        text=f'{question}',
                                                         font=("Helvetica", 25),
                                                         justify='center',
                                                         wraplength=600,
@@ -800,6 +838,7 @@ class ExamPage(Frame):
 
             answers_holder.append([answer_1, answer_2, answer_3, answer_4])
             q_and_a_holder.append(question_holder)
+
 
     def show_frame(self):
         global get_emotion
@@ -918,6 +957,7 @@ class ExamPage(Frame):
         global post_surveys
         global translations
         global pre_survey_answer
+        global shuffled_question_index
 
         self.is_destroy = False
         self.stopper = False
@@ -926,11 +966,14 @@ class ExamPage(Frame):
         question_counter = 0
         cur_answer = 5
         nlps = []
-        answers = []
+        answers = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                   5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                   5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
         emotions = []
         times = []
         post_surveys = []
         translations = []
+        shuffled_question_index = []
         pre_survey_answer = {}
         score = 0
         cap = cv2.VideoCapture(0)
@@ -938,8 +981,3 @@ class ExamPage(Frame):
         starting_time = seconds
         get_emotion = False
         final_name = ""
-
-# def on_close():
-#     global is_destroy
-#     is_destroy = True
-#     main_frame.destroy()
