@@ -494,18 +494,17 @@ class DashBoard(Frame):
                     row=i + 1, column=2,
                     sticky='nsew')
 
-
-
             pre_survey.columnconfigure(0, weight=1)
             pre_survey.columnconfigure(1, weight=1)
             pre_survey.rowconfigure(0, weight=1)
             pre_survey.rowconfigure(2, weight=1)
 
+            # for pre-exam
             # summary
             summary_holder = Frame(right_frame, bg="#2B2D42", height=20)
             summary_holder.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
 
-            summary_label = Label(summary_holder, text="SUMMARY", bg="#2B2D42", fg="white", font=("Arial", 25))
+            summary_label = Label(summary_holder, text="PRE-EXAM SUMMARY", bg="#2B2D42", fg="white", font=("Arial", 25))
             summary_label.pack(side='top', pady=10)
 
             summary_card_holder = customtkinter.CTkFrame(summary_holder, fg_color="#DC2F02", corner_radius=10,
@@ -528,24 +527,81 @@ class DashBoard(Frame):
             Label(summary, text="Remarks", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=4,
                                                                                                    sticky='nsew')
 
+            from statics import static
+            stat_value = static.Statics()
+            questions = stat_value.get_questions()
+
             for i in range(30):
-                Label(summary, text=i + 1, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1, column=0,
+                Label(summary, text=i + 1, wraplength=300, font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(row=i + 1, column=0, sticky='nsew')
+                has_pre_answer = item.get("pre_exam_answers")
+                has_pre_time = item.get("pre_exam_time")
+                has_pre_cnn = item.get('pre_exam_cnn')
+                Label(summary, text='-' if has_pre_answer is None else item['pre_exam_answers'][i],
+                      font=("Arial", 18), borderwidth=1, relief="solid").grid(
+                    row=i + 1, column=1,
+                    sticky='nsew')
+                Label(summary, text='-' if has_pre_time is None else item['pre_exam_times'][i], font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(
+                    row=i + 1,
+                    column=2,
+                    sticky='nsew')
+                Label(summary, text='-' if has_pre_cnn is None or len(has_pre_cnn) < 30 else item['pre_exam_cnn'][i], font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(row=i + 1, column=3, sticky='nsew')
+
+                # Label(summary, text='-' if has_pre_cnn is None else
+                #                     get_verdict(item['times'][i], item['pre_exam_cnn'][i], item['nlps'][i]), font=("Arial", 18),
+                #                     borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
+            summary.columnconfigure(0, weight=1)
+            summary.columnconfigure(1, weight=1)
+            summary.columnconfigure(2, weight=1)
+            summary.columnconfigure(3, weight=1)
+            summary.columnconfigure(4, weight=1)
+
+            # summary
+            summary_holder = Frame(right_frame, bg="#2B2D42", height=20)
+            summary_holder.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
+
+            summary_label = Label(summary_holder, text="SUMMARY", bg="#2B2D42", fg="white", font=("Arial", 25))
+            summary_label.pack(side='top', pady=10)
+
+            summary_card_holder = customtkinter.CTkFrame(summary_holder, fg_color="#DC2F02", corner_radius=10,
+                                                         height=20)
+            summary_card_holder.pack(side='top', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
+
+            summary = Frame(summary_card_holder, bg="white")
+            summary.pack(side='left', fill=BOTH, padx=(10, 0), pady=(0, 10), expand=True)
+
+            # headers
+
+            Label(summary, text="Question.", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=0,
+                                                                                                     sticky='nsew')
+            Label(summary, text="Answer", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=1,
+                                                                                                  sticky='nsew')
+            Label(summary, text="Time", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=2,
+                                                                                                sticky='nsew')
+            Label(summary, text="CNN", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=3,
+                                                                                               sticky='nsew')
+            Label(summary, text="Remarks", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0, column=4,
                                                                                                    sticky='nsew')
+
+            for i in range(30):
+                has_cnn = item.get('cnns')
+                Label(summary, text=i + 1, wraplength=300, font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(row=i + 1, column=0, sticky='nsew')
                 Label(summary, text=item['answers'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(
                     row=i + 1, column=1,
                     sticky='nsew')
                 Label(summary, text=item['times'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
                                                                                                               column=2,
                                                                                                               sticky='nsew')
-                # Label(summary, text=item['cnns'][i], font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
-                #                                                                                              column=3,
-                #                                                                                              sticky='nsew')
 
-                # verdict = get_verdict(item['times'][i], item['cnns'][i], item['nlps'][i])
-                #
-                # Label(summary, text=verdict, font=("Arial", 18), borderwidth=1, relief="solid").grid(row=i + 1,
-                #                                                                                      column=4,
-                #                                                                                      sticky='nsew')
+                Label(summary, text='-' if has_cnn is None or len(has_cnn) < 30 else item['cnns'][i], font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(row=i + 1, column=3, sticky='nsew')
+
+                # Label(summary, text='-' if has_cnn is None else
+                #                     get_verdict(item['times'][i], item['cnns'][i], item['nlps'][i]), font=("Arial", 18),
+                #                     borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)
@@ -554,7 +610,7 @@ class DashBoard(Frame):
 
             # post survey
             post_survey_holder = Frame(right_frame, bg="#2B2D42", height=20)
-            post_survey_holder.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
+            post_survey_holder.grid(row=5, column=0, columnspan=2, sticky="nsew", pady=(20, 0))
 
             post_survey_label = Label(post_survey_holder, text="Post-Survey", bg="#2B2D42", fg="white",
                                       font=("Arial", 25))
@@ -574,8 +630,8 @@ class DashBoard(Frame):
                                                                                                            column=1,
                                                                                                            sticky='nsew')
             Label(post_survey, text="Emotion", font=("Arial", 20), borderwidth=1, relief="solid").grid(row=0,
-                                                                                                           column=2,
-                                                                                                           sticky='nsew')
+                                                                                                       column=2,
+                                                                                                       sticky='nsew')
 
             # answers
             Label(post_survey, text=item['post_surveys'][0], wraplength=300, font=("Arial", 18), borderwidth=1,

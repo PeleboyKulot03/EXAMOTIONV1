@@ -123,7 +123,7 @@ class MainApp(tk.Tk):
 
         elif page_name == "ExamPage":
             self.frames[page_name].grid(row=0, column=0, sticky="nsew")
-            self.frames[page_name].re_enit()
+            self.frames[page_name].re_init()
             self.frames[page_name].create_frame()
             self.frames[page_name].start_camera_thread()
 
