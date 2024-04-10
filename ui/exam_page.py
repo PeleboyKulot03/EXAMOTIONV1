@@ -785,7 +785,7 @@ class ExamPage(Frame):
         self.next_button["state"] = "normal"
         self.post_survey = customtkinter.CTkFrame(master=self.center_frame, corner_radius=10, fg_color="#8D99AE")
         prompt_label = customtkinter.CTkLabel(master=self.post_survey,
-                                              text=f"What do you feel answering question number {question_counter + 1}?",
+                                              text=f"What do you feel answering the examination?",
                                               font=("Arial", 25),
                                               corner_radius=10,
                                               fg_color="#EDF2F4",

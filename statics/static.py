@@ -182,7 +182,7 @@ class Statics:
                 "correct": 1
             },
             {
-                "question": "../resources/q_21.jpg",
+                "question": "../resources/q_21.png",
                 1: "A. Hello",
                 2: "B. World",
                 3: "C. Error",
@@ -190,7 +190,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "../resources/q_22.jpg",
+                "question": "../resources/q_22.png",
                 1: "A. 5",
                 2: "B. 0",
                 3: "C. Error",
@@ -198,7 +198,7 @@ class Statics:
                 "correct": 3
             },
             {
-                "question": "../resources/q_23.jpg",
+                "question": "../resources/q_23.png",
                 1: "A. Outputs Hello twice in both",
                 2: "B. Outputs Hello2",
                 3: "C. Outputs Hello",
@@ -206,7 +206,7 @@ class Statics:
                 "correct": 4
             },
             {
-                "question": "../resources/q_24.jpg",
+                "question": "../resources/q_24.png",
                 1: "A. spacesintext",
                 2: "B. spaces in text",
                 3: "C. spaces",
@@ -214,7 +214,7 @@ class Statics:
                 "correct": 1
             },
             {
-                "question": "../resources/q_25.jpg",
+                "question": "../resources/q_25.png",
                 1: "A. Code 1 only",
                 2: "B. Neither code 1 nor code 2",
                 3: "C. Both code 1 and code 2",
@@ -222,7 +222,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "../resources/q_26.jpg",
+                "question": "../resources/q_26.png",
                 1: "A. 12",
                 2: "B. 0",
                 3: "C. 2",
@@ -230,7 +230,7 @@ class Statics:
                 "correct": 4
             },
             {
-                "question": "../resources/q_27.jpg",
+                "question": "../resources/q_27.png",
                 1: "A. Runtime error may be possible",
                 2: "B. Compiler error may be possible",
                 3: "C. 1",
@@ -238,7 +238,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "../resources/q_28.jpg",
+                "question": "../resources/q_28.png",
                 1: "A. Segmentation fault",
                 2: "B. Nothing is printed",
                 3: "C. Error",
@@ -246,7 +246,7 @@ class Statics:
                 "correct": 2
             },
             {
-                "question": "../resources/q_29.jpg",
+                "question": "../resources/q_29.png",
                 1: "A. Hello",
                 2: "B. World",
                 3: "C. Error",
@@ -254,7 +254,7 @@ class Statics:
                 "correct": 1
             },
             {
-                "question": "../resources/q_30.jpg",
+                "question": "../resources/q_30.png",
                 1: "A. I",
                 2: "B. J",
                 3: "C. A",

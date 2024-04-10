@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg,
 )
 import matplotlib
+from statics import static
 
 matplotlib.use("TkAgg")
 global_var = globals.Globals()
@@ -18,7 +19,8 @@ buttons_holder = []
 user_frame = []
 cur_user = 0
 is_first = True
-
+static_val = static.Statics()
+answer_key = static_val.get_answer_key()
 
 def user_click(user):
     global cur_user
@@ -34,71 +36,78 @@ def user_click(user):
     buttons_holder[cur_user].config(bg='#FEE440')
 
 
-def get_verdict(time, cnn, nlp):
+def get_verdict(time, cnn, answer, item):
+    if cnn == "No Emotion":
+        return "Undetermined"
     if time < 10:
-        if cnn == "Neutral" and nlp == "Neutral" or cnn == "Excited" and nlp == "Excited":
+        return "Balanced"
+
+    elif 10 <= time < 30:
+        # correct answer
+        if cnn == "Neutral" and answer == answer_key[item]:
+            return "Easy"
+        elif cnn == "Excited" and answer == answer_key[item]:
             return "Very Easy"
-        if cnn == "Bored" and nlp == "Bored":
+        elif cnn == "Bored" and answer == answer_key[item]:
+            return "Very Easy"
+        elif cnn == "Nervous" and answer == answer_key[item]:
+            return "Hard"
+        elif cnn == "Frustrated" and answer == answer_key[item]:
+            return "Hard"
+        elif cnn == "Surprised" and answer == answer_key[item]:
+            return "Hard"
+
+        # incorrect answers
+        elif cnn == "Neutral" and answer != answer_key[item]:
+            return "Hard"
+        elif cnn == "Excited" and answer != answer_key[item]:
+            return "Hard"
+        elif cnn == "Bored" and answer != answer_key[item]:
+            return "Hard"
+        elif cnn == "Nervous" and answer != answer_key[item]:
+            return "Hard"
+        elif cnn == "Frustrated" and answer != answer_key[item]:
+            return "Hard"
+        elif cnn == "Surprised" and answer != answer_key[item]:
+            return "Hard"
+
+    elif time >= 30:
+        # correct answer
+        if cnn == "Neutral" and answer == answer_key[item]:
             return "Easy"
-        if cnn == "Nervous" and nlp == "Nervous":
-            return "Hard"
-        if cnn == "Frustrated" and nlp == "Frustrated":
-            return "Very Hard"
-        if cnn == "Surprised" and nlp == "Surprised":
-            return "Very Hard"
-        else:
-            return "Undetermined"
-
-    elif time < 60:
-        if cnn == "Neutral" and nlp == "Neutral":
+        elif cnn == "Excited" and answer == answer_key[item]:
             return "Easy"
-        if cnn == "Excited" and nlp == "Excited":
-            return "Balanced"
-        if cnn == "Bored" and nlp == "Bored":
-            return "Hard"
-        if cnn == "Nervous" and nlp == "Nervous":
-            return "Balanced"
-        if cnn == "Frustrated" and nlp == "Frustrated":
-            return "Hard"
-        if cnn == "Surprised" and nlp == "Surprised":
-            return "Balanced"
 
-        else:
-            return "Undetermined"
-
-    elif time < 300:
-        if cnn == "Neutral" and nlp == "Neutral":
-            return "Balanced"
-        if cnn == "Excited" and nlp == "Excited":
+        elif cnn == "Bored" and answer == answer_key[item]:
             return "Easy"
-        if cnn == "Bored" and nlp == "Bored":
-            return "Hard"
-        if cnn == "Nervous" and nlp == "Nervous":
-            return "Balanced"
-        if cnn == "Frustrated" and nlp == "Frustrated":
-            return "Very Hard"
-        if cnn == "Surprised" and nlp == "Surprised":
+
+        elif cnn == "Nervous" and answer == answer_key[item]:
             return "Balanced"
 
-        else:
-            return "Undetermined"
-
-    elif time >= 300:
-        if cnn == "Neutral" and nlp == "Neutral":
-            return "Balanced"
-        if cnn == "Excited" and nlp == "Excited":
-            return "Easy"
-        if cnn == "Bored" and nlp == "Bored":
-            return "Very Hard"
-        if cnn == "Nervous" and nlp == "Nervous":
-            return "Hard"
-        if cnn == "Frustrated" and nlp == "Frustrated":
-            return "Very Hard"
-        if cnn == "Surprised" and nlp == "Surprised":
+        elif cnn == "Frustrated" and answer == answer_key[item]:
             return "Balanced"
 
-        else:
-            return "Undetermined"
+        elif cnn == "Surprised" and answer == answer_key[item]:
+            return "Balanced"
+
+        # incorrect answer
+        elif cnn == "Neutral" and answer != answer_key[item]:
+            return "Balanced"
+
+        elif cnn == "Excited" and answer != answer_key[item]:
+            return "Very Hard"
+
+        elif cnn == "Bored" and answer != answer_key[item]:
+            return "Very Hard"
+
+        elif cnn == "Nervous" and answer != answer_key[item]:
+            return "Very Hard"
+
+        elif cnn == "Frustrated" and answer != answer_key[item]:
+            return "Very Hard"
+
+        elif cnn == "Surprised" and answer != answer_key[item]:
+            return "Very Hard"
 
 
 class DashBoard(Frame):
@@ -549,9 +558,9 @@ class DashBoard(Frame):
                 Label(summary, text='-' if has_pre_cnn is None or len(has_pre_cnn) < 30 else item['pre_exam_cnn'][i], font=("Arial", 18),
                       borderwidth=1, relief="solid").grid(row=i + 1, column=3, sticky='nsew')
 
-                # Label(summary, text='-' if has_pre_cnn is None else
-                #                     get_verdict(item['times'][i], item['pre_exam_cnn'][i], item['nlps'][i]), font=("Arial", 18),
-                #                     borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
+                Label(summary, text='-' if has_pre_cnn is None or len(has_pre_cnn) < 30 else
+                                    get_verdict(item['pre_exam_times'][i], item['pre_exam_cnn'][i], item['pre_exam_answer'][i], i), font=("Arial", 18),
+                                    borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)
@@ -599,9 +608,9 @@ class DashBoard(Frame):
                 Label(summary, text='-' if has_cnn is None or len(has_cnn) < 30 else item['cnns'][i], font=("Arial", 18),
                       borderwidth=1, relief="solid").grid(row=i + 1, column=3, sticky='nsew')
 
-                # Label(summary, text='-' if has_cnn is None else
-                #                     get_verdict(item['times'][i], item['cnns'][i], item['nlps'][i]), font=("Arial", 18),
-                #                     borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
+                Label(summary, text='-' if has_cnn is None or len(has_cnn) < 30 else
+                                    get_verdict(item['times'][i], item['cnns'][i], item['answers'][i], i), font=("Arial", 18),
+                                    borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)
