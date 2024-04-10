@@ -695,6 +695,7 @@ class ExamPage(Frame):
             pred = prediction[0]["label"]
             pred_score = prediction[0]["score"]
 
+
             if pred == 'joy':
                 pred = 'Excited'
             if pred == 'sadness':
@@ -708,7 +709,10 @@ class ExamPage(Frame):
             elif pred == 'love':
                 pred = 'Excited'
 
-            if pred_score < 0.60:
+            if pred_score < 0.65:
+                pred = "No Emotion"
+
+            if len(text) < 2:
                 pred = "No Emotion"
 
             post_surveys.append(post_survey_answer)

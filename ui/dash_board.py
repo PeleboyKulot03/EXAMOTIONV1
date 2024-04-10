@@ -22,6 +22,7 @@ is_first = True
 static_val = static.Statics()
 answer_key = static_val.get_answer_key()
 
+
 def user_click(user):
     global cur_user
     user_frame[cur_user].pack_forget()
@@ -345,19 +346,28 @@ class DashBoard(Frame):
         user_frame.clear()
 
         for item in self.users:
+            pre_survey_score = 0
             right_frame = Frame(self.scrollable_frame, bg="#2B2D42", padx=20, pady=10)
+            has_pre_answer = item.get("pre_exam_answers")
+            has_pre_time = item.get("pre_exam_time")
+            has_pre_cnn = item.get('pre_exam_cnn')
+            for i in range(30):
+                if has_pre_answer is not None:
+                    if item['pre_exam_answers'][i] == answer_key[i]:
+                        pre_survey_score += 1
 
             # score
             score_holder = Frame(right_frame, bg="#2B2D42")
             score_holder.grid(row=0, column=0, pady=(0, 40))
 
-            score_label = Label(score_holder, text="SCORE:", bg="#2B2D42", fg="white", font=("Arial", 25))
+            score_label = Label(score_holder, text="PRE-SCORE | SCORE", bg="#2B2D42", fg="white", font=("Arial", 25))
             score_label.pack(side='top', anchor='w')
 
             score_card_holder = customtkinter.CTkFrame(score_holder, fg_color="#DC2F02", corner_radius=10, height=20)
             score_card_holder.pack(side='top', fill=BOTH, pady=10, expand=True)
 
-            score = Label(score_card_holder, bg="white", text=f"{item['score']}/30", font=("Arial", 25), width=10,
+            score = Label(score_card_holder, bg="white", text=f"{pre_survey_score}/30 | {item['score']}/30",
+                          font=("Arial", 25), width=10,
                           pady=10)
 
             score.pack(side='left', padx=(0, 10), fill=X, expand=True)
@@ -543,9 +553,6 @@ class DashBoard(Frame):
             for i in range(30):
                 Label(summary, text=i + 1, wraplength=300, font=("Arial", 18),
                       borderwidth=1, relief="solid").grid(row=i + 1, column=0, sticky='nsew')
-                has_pre_answer = item.get("pre_exam_answers")
-                has_pre_time = item.get("pre_exam_time")
-                has_pre_cnn = item.get('pre_exam_cnn')
                 Label(summary, text='-' if has_pre_answer is None else item['pre_exam_answers'][i],
                       font=("Arial", 18), borderwidth=1, relief="solid").grid(
                     row=i + 1, column=1,
@@ -555,12 +562,14 @@ class DashBoard(Frame):
                     row=i + 1,
                     column=2,
                     sticky='nsew')
-                Label(summary, text='-' if has_pre_cnn is None or len(has_pre_cnn) < 30 else item['pre_exam_cnn'][i], font=("Arial", 18),
+                Label(summary, text='-' if has_pre_cnn is None or len(has_pre_cnn) < 30 else item['pre_exam_cnn'][i],
+                      font=("Arial", 18),
                       borderwidth=1, relief="solid").grid(row=i + 1, column=3, sticky='nsew')
 
                 Label(summary, text='-' if has_pre_cnn is None or len(has_pre_cnn) < 30 else
-                                    get_verdict(item['pre_exam_times'][i], item['pre_exam_cnn'][i], item['pre_exam_answer'][i], i), font=("Arial", 18),
-                                    borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
+                get_verdict(item['pre_exam_times'][i], item['pre_exam_cnn'][i], item['pre_exam_answer'][i], i),
+                      font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)
@@ -605,12 +614,13 @@ class DashBoard(Frame):
                                                                                                               column=2,
                                                                                                               sticky='nsew')
 
-                Label(summary, text='-' if has_cnn is None or len(has_cnn) < 30 else item['cnns'][i], font=("Arial", 18),
+                Label(summary, text='-' if has_cnn is None or len(has_cnn) < 30 else item['cnns'][i],
+                      font=("Arial", 18),
                       borderwidth=1, relief="solid").grid(row=i + 1, column=3, sticky='nsew')
 
                 Label(summary, text='-' if has_cnn is None or len(has_cnn) < 30 else
-                                    get_verdict(item['times'][i], item['cnns'][i], item['answers'][i], i), font=("Arial", 18),
-                                    borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
+                get_verdict(item['times'][i], item['cnns'][i], item['answers'][i], i), font=("Arial", 18),
+                      borderwidth=1, relief="solid").grid(row=i + 1, column=4, sticky='nsew')
             summary.columnconfigure(0, weight=1)
             summary.columnconfigure(1, weight=1)
             summary.columnconfigure(2, weight=1)
